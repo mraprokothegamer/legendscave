@@ -6,6 +6,14 @@ const progressFill = document.querySelector('.progress-fill');
 const percentLabel = document.querySelector('.percent');
 let fillTimer = null;
 
+function applyNearPlayerLayout() {
+    if (!nuiRoot) return;
+    // Slightly right of center, mid-low — near player, animation stays visible
+    nuiRoot.style.justifyContent = 'center';
+    nuiRoot.style.alignItems = 'flex-end';
+    nuiRoot.style.padding = '0 0 20vh 26vw';
+}
+
 function setOpen(open) {
     if (!fillUi) return;
     if (open) {
@@ -27,14 +35,8 @@ function updateProgress(p) {
 function startFill(duration) {
     if (fillTimer) clearInterval(fillTimer);
     updateProgress(0);
+    applyNearPlayerLayout();
     setOpen(true);
-
-    // Keep far right (never center — was blocking the player)
-    if (nuiRoot) {
-        nuiRoot.style.justifyContent = 'flex-end';
-        nuiRoot.style.alignItems = 'flex-end';
-        nuiRoot.style.padding = '0 8px 110px 0';
-    }
 
     const totalMs = Math.max(Number(duration) || 7000, 5000);
     const stepMs = 50;
@@ -60,6 +62,8 @@ function hideFill() {
     updateProgress(0);
     setOpen(false);
 }
+
+applyNearPlayerLayout();
 
 window.addEventListener('message', (event) => {
     const data = event.data;

@@ -5,13 +5,13 @@ Config.Framework = 'auto'
 Config.Hud = '17mov_Hud'
 Config.HudResource = '17mov_Hud'
 
--- Far right so NUI does not block the player
-Config.NuiPosition = 'bottom-right'
-Config.NuiPaddingRight = 8
+-- NUI near player (slightly right of center) — not covering animation, not far edge
+Config.NuiPosition = 'near-player'
 Config.TargetDistance = 2.0
 
-Config.FreeWater = false
-Config.WaterPrice = 10
+-- FREE water for everyone
+Config.FreeWater = true
+Config.WaterPrice = 0
 Config.ThirstRefill = 30
 Config.ThirstMax = 1000000
 
@@ -25,12 +25,12 @@ Config.FillDuration = 7000
 Config.SipDelay = 400
 Config.AnimDuration = Config.FillDuration + 2500
 
--- RIGHT hand — use plastic cup (paper cup crashes on many builds)
-Config.CupModel = `prop_plastic_cup_02`
-Config.CupModelFallback = `p_amb_coffeecup_01`
-Config.CupBone = 57005
-Config.CupOffset = { x = 0.12, y = 0.02, z = -0.02 }
-Config.CupRotation = { x = -80.0, y = 0.0, z = 10.0 }
+-- LEFT hand red plastic cup (18905 = SKEL_L_Hand)
+Config.CupModel = `apa_prop_cs_plastic_cup_01`
+Config.CupModelFallback = `prop_plastic_cup_02`
+Config.CupBone = 18905
+Config.CupOffset = { x = 0.12, y = 0.028, z = 0.001 }
+Config.CupRotation = { x = 10.0, y = 175.0, z = 0.0 }
 
 Config.PourSound = {
     name = 'Pour',
@@ -46,7 +46,7 @@ Config.Remarks = {
     'Cold water on a hot day — nothing better.',
     'My throat was so dry... feeling human again.',
     'Public water never tasted so good.',
-    'Worth every dollar. Feeling refreshed.',
+    'Feeling refreshed.',
 }
 
 -- Existing Rockstar coolers in the map (no spawning)

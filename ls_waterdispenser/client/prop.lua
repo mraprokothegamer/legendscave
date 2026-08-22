@@ -2,12 +2,12 @@ Prop = {}
 
 local cupEntity = nil
 
--- prop_cs_paper_cup is INVALID on many builds — do not use it first
+-- Prefer red/plastic cup look; validate before load (paper cup invalid on some builds)
 local FALLBACK_MODELS = {
+    `apa_prop_cs_plastic_cup_01`,
     `prop_plastic_cup_02`,
+    `prop_cs_paper_cup`,
     `p_amb_coffeecup_01`,
-    `prop_mug_02`,
-    `v_ret_fh_mug1`,
 }
 
 local function debugPrint(message)
@@ -61,6 +61,8 @@ local function attachCup()
         push(FALLBACK_MODELS[i])
     end
 
+    local bone = Config.CupBone or 18905 -- LEFT hand
+
     for i = 1, #models do
         local model = models[i]
         if loadModelSafe(model) then
@@ -69,13 +71,13 @@ local function attachCup()
                 AttachEntityToEntity(
                     cup,
                     ped,
-                    GetPedBoneIndex(ped, Config.CupBone or 57005),
+                    GetPedBoneIndex(ped, bone),
                     Config.CupOffset.x, Config.CupOffset.y, Config.CupOffset.z,
                     Config.CupRotation.x, Config.CupRotation.y, Config.CupRotation.z,
                     true, true, false, true, 1, true
                 )
                 SetModelAsNoLongerNeeded(model)
-                debugPrint(('Cup on RIGHT hand model=%s'):format(model))
+                debugPrint(('Cup on LEFT hand model=%s bone=%s'):format(model, bone))
                 return cup
             end
             if cup and DoesEntityExist(cup) then DeleteObject(cup) end
@@ -97,9 +99,7 @@ end
 function Prop.attachCup()
     Prop.cleanup()
     local cup = attachCup()
-    if not cup then
-        return nil
-    end
+    if not cup then return nil end
     cupEntity = cup
     return cup
 end

@@ -12,8 +12,7 @@ local function showFillNui(duration)
     SendNUIMessage({
         action = 'startFill',
         duration = duration,
-        position = Config.NuiPosition or 'bottom-right',
-        paddingRight = Config.NuiPaddingRight or 4,
+        position = Config.NuiPosition or 'near-player',
     })
 end
 
