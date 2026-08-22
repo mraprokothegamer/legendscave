@@ -4,7 +4,7 @@ game 'gta5'
 name 'ls_waterdispenser'
 author 'legendscave'
 description 'Existing Rockstar water coolers — free drink, left-hand cup, auto-hiding NUI'
-version '2.3.0'
+version '2.3.1'
 
 lua54 'yes'
 
@@ -24,7 +24,6 @@ shared_scripts {
 
 client_scripts {
     'client/hud.lua',
-    'client/prop.lua',
     'client/main.lua',
 }
 
