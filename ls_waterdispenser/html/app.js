@@ -59,7 +59,8 @@ if (new URLSearchParams(window.location.search).get("demo") === "1") {
     // Demo-only backdrop so the transparent in-game overlay is visible here.
     document.body.style.background =
         "radial-gradient(circle at 30% 30%, #2a3b4d, #0d141c)";
-    const duration = 5000;
+    // Matches Config.DrinkDuration (10s) so the preview reflects in-game timing.
+    const duration = 10000;
     const loop = () => {
         startFill(duration, null, 0.5);
         setTimeout(() => {

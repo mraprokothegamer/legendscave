@@ -9,12 +9,9 @@ Config.WindowMinutes = 60
 -- How much thirst each use restores (additive, capped at 100).
 Config.ThirstRestore = 45
 
--- Phase 1: how long the cup takes to fill (ms). This is the middle-right NUI
--- (cup filling with water + progress bar) shown BEFORE the drinking animation,
--- while the player holds the cup at the dispenser.
-Config.FillDuration = 5000
-
--- Phase 2: how long the drinking animation plays afterwards (ms).
+-- How long the drink takes (ms). The player stays in the drinking animation for
+-- this whole time while the middle-right NUI fills the cup with water; both end
+-- together when the cup is full.
 Config.DrinkDuration = 10000
 
 -- ox_target option appearance.

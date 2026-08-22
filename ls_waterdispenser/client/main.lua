@@ -52,27 +52,24 @@ local function drink()
         return
     end
 
-    -- Hold the cup in the left hand for the whole interaction.
+    -- Hold the cup in the left hand and play the drinking animation while the
+    -- middle-right NUI fills the cup with water. The player stays in the
+    -- animation for the whole duration, until the water is full.
     attachCup()
+    playAnim()
 
-    -- Phase 1: fill the cup. Middle-right NUI + progress bar, no drink anim yet.
     SendNUIMessage({
         action = 'startFill',
-        duration = Config.FillDuration,
+        duration = Config.DrinkDuration,
         sound = Config.Sound.enabled and Config.Sound.file or nil,
         volume = Config.Sound.volume,
     })
 
-    Wait(Config.FillDuration)
-
-    SendNUIMessage({ action = 'stopFill' })
-
-    -- Phase 2: drink. NUI is hidden; play the drinking animation with the cup.
-    playAnim()
     Wait(Config.DrinkDuration)
-    stopAnim()
 
+    stopAnim()
     removeCup()
+    SendNUIMessage({ action = 'stopFill' })
 
     lib.notify({ type = 'success', description = message })
     isDrinking = false
