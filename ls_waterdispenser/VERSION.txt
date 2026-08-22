@@ -1,0 +1,3 @@
+2.3.4
+Required files: client/prop.lua + client/main.lua + html/*
+Console must print: prop.lua v2.3.4 AND main.lua v2.3.4

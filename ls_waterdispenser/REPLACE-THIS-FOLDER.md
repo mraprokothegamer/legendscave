@@ -1,13 +1,12 @@
-# CRITICAL — Install v2.3.2 (restored working NUI + cup prop)
+# CRITICAL — Install v2.3.4 (fixes `Prop` nil)
 
-This is the last known-good build: fill NUI near the player + plastic cup on the left hand during drink.
-No separate `Prop` module — cup attach lives in `client/main.lua`.
-
-Your console error:
+Your error:
 ```
 attempt to index a nil value (global 'Prop')
+@ls_waterdispenser/client/main.lua:49
+@ls_waterdispenser/client/main.lua:82
 ```
-means the server is STILL running an OLD `client/main.lua`.
+means `client/prop.lua` is **missing** on the server (or not listed in `fxmanifest.lua`).
 
 ## Do this exactly
 
@@ -16,28 +15,30 @@ means the server is STILL running an OLD `client/main.lua`.
    stop ls_waterdispenser
    ```
 
-2. On the server machine, **DELETE** the whole folder:
+2. On the server, **DELETE** the whole folder:
    ```
    resources/.../ls_waterdispenser
    ```
    Do not overwrite. Delete it.
 
-3. Download fresh zip:
+3. Download:
    https://codeload.github.com/mraprokothegamer/legendscave/zip/refs/heads/cursor/water-dispenser-resource-b357
 
 4. From the zip, copy folder `ls_waterdispenser` into resources.
 
-5. Confirm these files exist:
+5. Confirm **all** of these exist:
    ```
-   ls_waterdispenser/fxmanifest.lua
+   ls_waterdispenser/fxmanifest.lua          ← must list client/prop.lua
    ls_waterdispenser/config.lua
-   ls_waterdispenser/client/main.lua      ← MUST be ~11KB, no Prop. calls
    ls_waterdispenser/client/hud.lua
+   ls_waterdispenser/client/prop.lua         ← REQUIRED (defines Prop)
+   ls_waterdispenser/client/main.lua
    ls_waterdispenser/server/main.lua
    ls_waterdispenser/server/framework.lua
    ls_waterdispenser/html/index.html
+   ls_waterdispenser/html/app.js
+   ls_waterdispenser/html/style.css
    ```
-   There should be **NO** `client/prop.lua`.
 
 6. Start:
    ```
@@ -45,9 +46,11 @@ means the server is STILL running an OLD `client/main.lua`.
    ensure ls_waterdispenser
    ```
 
-7. Console MUST show:
+7. Console MUST show **both** lines:
    ```
-   [ls_waterdispenser] client/main.lua v2.3.2 loaded (self-contained, no Prop module)
+   [ls_waterdispenser] client/prop.lua v2.3.4 loaded (Prop module OK)
+   [ls_waterdispenser] client/main.lua v2.3.4 loaded (expects Prop from prop.lua)
    ```
 
-If you still see `Prop` errors, the wrong folder is being started (check `ensure` path / duplicate resources).
+If you only see `main.lua` and not `prop.lua`, the file was not copied or `fxmanifest.lua` is old.
+If you still see `Prop` nil, a duplicate/old `ls_waterdispenser` or `waterdispenser` resource is being started instead.

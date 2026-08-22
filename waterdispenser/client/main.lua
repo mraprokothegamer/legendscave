@@ -1,147 +1,22 @@
 --[[
-    ls_waterdispenser client — self-contained (cup + drink + NUI)
-    No separate Prop file required.
-    VERSION: 2.3.2
+    ls_waterdispenser client — drink flow + NUI
+    VERSION: 2.3.4 — requires client/prop.lua (global Prop)
 ]]
 
-print('^2[ls_waterdispenser] client/main.lua v2.3.2 loaded (self-contained, no Prop module)^0')
+print('^2[ls_waterdispenser] client/main.lua v2.3.4 loaded (expects Prop from prop.lua)^0')
+
+if type(Prop) ~= 'table' or type(Prop.attachCup) ~= 'function' then
+    print('^1[ls_waterdispenser] FATAL: client/prop.lua is missing or failed to load.^0')
+    print('^1[ls_waterdispenser] DELETE the whole ls_waterdispenser folder and reinstall v2.3.4.^0')
+end
 
 local registeredModels = {}
 local isDrinking = false
-local cupEntity = nil
-
-local CUP_MODELS = {
-    `prop_plastic_cup_02`,
-    `ng_proc_sodacup_01a`,
-    `ng_proc_sodacup_01b`,
-    `ng_proc_sodacup_01c`,
-    `apa_prop_cs_plastic_cup_01`,
-    `p_amb_coffeecup_01`,
-}
-
-local LEFT_BONES = {
-    60309, -- PH_L_Hand
-    18905, -- SKEL_L_Hand
-}
 
 local function debugPrint(message)
     if Config.Debug then
         print(('[ls_waterdispenser] %s'):format(message))
     end
-end
-
-local function toHash(model)
-    if type(model) == 'string' then
-        return joaat(model)
-    end
-    return model
-end
-
-local function requestModel(model)
-    if HasModelLoaded(model) then
-        return true
-    end
-    RequestModel(model)
-    local timeout = GetGameTimer() + 5000
-    while not HasModelLoaded(model) do
-        if GetGameTimer() > timeout then
-            return false
-        end
-        Wait(10)
-    end
-    return true
-end
-
-local function cleanupCup()
-    if cupEntity and DoesEntityExist(cupEntity) then
-        DetachEntity(cupEntity, true, true)
-        SetEntityAsMissionEntity(cupEntity, true, true)
-        DeleteEntity(cupEntity)
-    end
-    cupEntity = nil
-end
-
---- Attach red/plastic cup to LEFT hand
-local function attachCup()
-    cleanupCup()
-
-    local ped = PlayerPedId()
-    local coords = GetEntityCoords(ped)
-
-    local models = {}
-    local seen = {}
-    local function push(m)
-        local h = toHash(m)
-        if h and h ~= 0 and not seen[h] then
-            seen[h] = true
-            models[#models + 1] = h
-        end
-    end
-
-    push(Config.CupModel)
-    push(Config.CupModelFallback)
-    for i = 1, #CUP_MODELS do
-        push(CUP_MODELS[i])
-    end
-
-    local bones = { Config.CupBone or 60309 }
-    for i = 1, #LEFT_BONES do
-        local already = false
-        for j = 1, #bones do
-            if bones[j] == LEFT_BONES[i] then already = true break end
-        end
-        if not already then bones[#bones + 1] = LEFT_BONES[i] end
-    end
-
-    local ox = (Config.CupOffset and Config.CupOffset.x) or 0.15
-    local oy = (Config.CupOffset and Config.CupOffset.y) or 0.02
-    local oz = (Config.CupOffset and Config.CupOffset.z) or -0.03
-    local rx = (Config.CupRotation and Config.CupRotation.x) or -80.0
-    local ry = (Config.CupRotation and Config.CupRotation.y) or 0.0
-    local rz = (Config.CupRotation and Config.CupRotation.z) or -20.0
-
-    for _, bone in ipairs(bones) do
-        for _, model in ipairs(models) do
-            if requestModel(model) then
-                local cup = CreateObject(model, coords.x, coords.y, coords.z + 0.2, false, false, false)
-                if not cup or cup == 0 or not DoesEntityExist(cup) then
-                    cup = CreateObject(model, coords.x, coords.y, coords.z + 0.2, true, true, false)
-                end
-
-                if cup and cup ~= 0 and DoesEntityExist(cup) then
-                    SetEntityAsMissionEntity(cup, true, true)
-                    SetEntityCollision(cup, false, false)
-                    SetEntityVisible(cup, true, false)
-                    ResetEntityAlpha(cup)
-
-                    AttachEntityToEntity(
-                        cup,
-                        ped,
-                        GetPedBoneIndex(ped, bone),
-                        ox, oy, oz,
-                        rx, ry, rz,
-                        true, true, false, true, 1, true
-                    )
-
-                    Wait(50)
-
-                    if DoesEntityExist(cup) and IsEntityAttachedToEntity(cup, ped) then
-                        cupEntity = cup
-                        SetModelAsNoLongerNeeded(model)
-                        debugPrint(('LEFT hand cup OK model=%s bone=%s'):format(model, bone))
-                        return cup
-                    end
-
-                    DeleteEntity(cup)
-                end
-
-                SetModelAsNoLongerNeeded(model)
-            end
-        end
-    end
-
-    debugPrint('FAILED to attach cup to left hand')
-    return nil
 end
 
 local function showFillNui(duration)
@@ -168,6 +43,7 @@ local function playDrinkAnim(ped)
         Wait(10)
     end
 
+    -- -1 duration = loop until we clear it
     TaskPlayAnim(ped, dict, name, 8.0, -8.0, -1, 49, 0.0, false, false, false)
     return true
 end
@@ -182,7 +58,7 @@ local function hardCleanup(ped)
         StopAnimTask(ped, Config.AnimDict or 'mp_player_intdrink', Config.AnimName or 'loop_bottle', 1.0)
     end
 
-    cleanupCup()
+    Prop.cleanup()
     isDrinking = false
 end
 
@@ -210,19 +86,25 @@ local function playDrinkSequence()
         local fillDuration = Config.FillDuration or 10000
 
         local ok, err = pcall(function()
+            -- 1) Start drinking animation
             playDrinkAnim(playerPed)
             Wait(200)
 
-            local cup = attachCup()
+            -- 2) Put red cup in LEFT hand
+            local cup = Prop.attachCup()
             if not cup then
                 Wait(100)
-                cup = attachCup()
+                cup = Prop.attachCup()
             end
 
-            if not cup then
+            if cup then
+                debugPrint('Cup is in left hand')
+            else
+                debugPrint('WARNING: cup did not attach')
                 lib.notify({ type = 'error', description = 'Cup prop failed to load.' })
             end
 
+            -- 3) Show fill NUI (~10 seconds)
             showFillNui(fillDuration)
 
             if cup and DoesEntityExist(cup) then
@@ -231,14 +113,16 @@ local function playDrinkSequence()
                 PlaySoundFromEntity(-1, Config.PourSound.name, playerPed, Config.PourSound.bank, false, 0)
             end
 
+            -- 4) Wait fill duration, keep anim + cup alive
             local fillStarted = GetGameTimer()
             while GetGameTimer() - fillStarted < fillDuration do
                 if IsEntityDead(playerPed) then
                     error('player_dead')
                 end
 
-                if not cupEntity or not DoesEntityExist(cupEntity) then
-                    cup = attachCup()
+                local current = Prop.getEntity()
+                if not current or not DoesEntityExist(current) then
+                    Prop.attachCup()
                 end
 
                 if not IsEntityPlayingAnim(playerPed, Config.AnimDict, Config.AnimName, 3) then
@@ -251,7 +135,7 @@ local function playDrinkSequence()
                 Wait(0)
             end
 
-            -- Fill/drink done — hide NUI immediately
+            -- 5) Hide NUI as soon as fill/drink time is done
             hideFillNui()
             Wait(50)
             hideFillNui()
@@ -260,6 +144,7 @@ local function playDrinkSequence()
             PlaySoundFromEntity(-1, Config.SipSound.name, playerPed, Config.SipSound.bank, false, 0)
 
             remark = lib.callback.await('waterdispenser:drinkWater', false)
+
             Wait(800)
         end)
 
@@ -270,6 +155,7 @@ local function playDrinkSequence()
             end)
         end
 
+        -- 6) ALWAYS cleanup — NUI must disappear, cup removed, anim stopped
         hardCleanup(playerPed)
 
         if ok and remark then
@@ -359,20 +245,23 @@ CreateThread(function()
 end)
 
 RegisterCommand('testcup', function()
-    local cup = attachCup()
+    Config.Debug = true
+    local cup = Prop.attachCup()
+    print('[ls_waterdispenser] testcup:', cup)
     lib.notify({
         type = cup and 'success' or 'error',
-        description = cup and 'Cup on LEFT hand for 8s' or 'Cup failed — check F8',
+        description = cup and 'Cup attached to LEFT hand for 8s' or 'Cup failed — check F8',
     })
     if cup then
         CreateThread(function()
             Wait(8000)
-            cleanupCup()
+            Prop.cleanup()
         end)
     end
 end, false)
 
 RegisterCommand('testwater', function()
+    Config.Debug = true
     playDrinkSequence()
 end, false)
 

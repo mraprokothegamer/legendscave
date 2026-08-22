@@ -3,8 +3,8 @@ game 'gta5'
 
 name 'ls_waterdispenser'
 author 'legendscave'
-description 'Existing Rockstar water coolers — free drink, left-hand cup, auto-hiding NUI'
-version '2.3.2'
+description 'Existing Rockstar water coolers — free drink, Prop cup + auto-hiding NUI'
+version '2.3.4'
 
 lua54 'yes'
 
@@ -22,8 +22,10 @@ shared_scripts {
     'shared/validate.lua',
 }
 
+-- prop.lua MUST load before main.lua (defines global Prop)
 client_scripts {
     'client/hud.lua',
+    'client/prop.lua',
     'client/main.lua',
 }
 
