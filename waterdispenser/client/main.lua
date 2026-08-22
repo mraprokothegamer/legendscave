@@ -3,7 +3,7 @@
     Drink from existing water coolers: anim + cup + NUI + thirst
 ]]
 
-print('^2[ls_waterdispenser] v2.4.0 loaded^0')
+print('^2[ls_waterdispenser] v2.4.1 loaded^0')
 
 local registeredModels = {}
 local isDrinking = false
@@ -71,57 +71,53 @@ local function attachCup()
     local ped = PlayerPedId()
     local coords = GetEntityCoords(ped)
     local bone = Config.CupBone or 60309
-    local ox = (Config.CupOffset and Config.CupOffset.x) or 0.15
+    local ox = (Config.CupOffset and Config.CupOffset.x) or 0.02
     local oy = (Config.CupOffset and Config.CupOffset.y) or 0.02
-    local oz = (Config.CupOffset and Config.CupOffset.z) or -0.03
-    local rx = (Config.CupRotation and Config.CupRotation.x) or -80.0
+    local oz = (Config.CupOffset and Config.CupOffset.z) or -0.01
+    local rx = (Config.CupRotation and Config.CupRotation.x) or -15.0
     local ry = (Config.CupRotation and Config.CupRotation.y) or 0.0
-    local rz = (Config.CupRotation and Config.CupRotation.z) or -20.0
+    local rz = (Config.CupRotation and Config.CupRotation.z) or 0.0
 
     local models = { Config.CupModel, Config.CupModelFallback }
     for i = 1, #CUP_MODELS do
         models[#models + 1] = CUP_MODELS[i]
     end
 
-    local bones = { bone, 60309, 18905 }
-
-    for b = 1, #bones do
-        for m = 1, #models do
-            local model = models[m]
-            if type(model) == 'string' then
-                model = joaat(model)
+    for m = 1, #models do
+        local model = models[m]
+        if type(model) == 'string' then
+            model = joaat(model)
+        end
+        if model and model ~= 0 and requestModel(model) then
+            local cup = CreateObject(model, coords.x, coords.y, coords.z + 0.2, false, false, false)
+            if not cup or cup == 0 or not DoesEntityExist(cup) then
+                cup = CreateObject(model, coords.x, coords.y, coords.z + 0.2, true, true, false)
             end
-            if model and model ~= 0 and requestModel(model) then
-                local cup = CreateObject(model, coords.x, coords.y, coords.z + 0.2, false, false, false)
-                if not cup or cup == 0 or not DoesEntityExist(cup) then
-                    cup = CreateObject(model, coords.x, coords.y, coords.z + 0.2, true, true, false)
+
+            if cup and cup ~= 0 and DoesEntityExist(cup) then
+                SetEntityAsMissionEntity(cup, true, true)
+                SetEntityCollision(cup, false, false)
+                SetEntityVisible(cup, true, false)
+                ResetEntityAlpha(cup)
+
+                AttachEntityToEntity(
+                    cup, ped, GetPedBoneIndex(ped, bone),
+                    ox, oy, oz, rx, ry, rz,
+                    true, true, false, true, 1, true
+                )
+
+                Wait(50)
+
+                if DoesEntityExist(cup) and IsEntityAttachedToEntity(cup, ped) then
+                    cupEntity = cup
+                    SetModelAsNoLongerNeeded(model)
+                    debugPrint(('cup attached bone=%s'):format(bone))
+                    return cup
                 end
 
-                if cup and cup ~= 0 and DoesEntityExist(cup) then
-                    SetEntityAsMissionEntity(cup, true, true)
-                    SetEntityCollision(cup, false, false)
-                    SetEntityVisible(cup, true, false)
-                    ResetEntityAlpha(cup)
-
-                    AttachEntityToEntity(
-                        cup, ped, GetPedBoneIndex(ped, bones[b]),
-                        ox, oy, oz, rx, ry, rz,
-                        true, true, false, true, 1, true
-                    )
-
-                    Wait(50)
-
-                    if DoesEntityExist(cup) and IsEntityAttachedToEntity(cup, ped) then
-                        cupEntity = cup
-                        SetModelAsNoLongerNeeded(model)
-                        debugPrint(('cup attached bone=%s'):format(bones[b]))
-                        return cup
-                    end
-
-                    DeleteEntity(cup)
-                end
-                SetModelAsNoLongerNeeded(model)
+                DeleteEntity(cup)
             end
+            SetModelAsNoLongerNeeded(model)
         end
     end
 

@@ -1,4 +1,4 @@
-# ls_waterdispenser v2.4.0
+# ls_waterdispenser v2.4.1
 
 Simple install:
 
@@ -8,6 +8,6 @@ Simple install:
 3. Copy `ls_waterdispenser` into your resources
 4. `ensure ls_waterdispenser`
 
-Console should show: `[ls_waterdispenser] v2.4.0 loaded`
+Console should show: `[ls_waterdispenser] v2.4.1 loaded`
 
 There is **no** `client/prop.lua`. Cup code is inside `client/main.lua` only.

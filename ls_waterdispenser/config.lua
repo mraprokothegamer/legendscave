@@ -26,13 +26,12 @@ Config.FillDuration = 10000
 Config.SipDelay = 500
 Config.AnimDuration = 12000
 
--- LEFT hand red plastic cup
--- 60309 = PH_L_Hand (prop hand bone)
+-- LEFT hand red plastic cup (PH_L_Hand wants small offsets)
 Config.CupModel = `prop_plastic_cup_02`
 Config.CupModelFallback = `ng_proc_sodacup_01a`
 Config.CupBone = 60309
-Config.CupOffset = { x = 0.15, y = 0.02, z = -0.03 }
-Config.CupRotation = { x = -80.0, y = 0.0, z = -20.0 }
+Config.CupOffset = { x = 0.02, y = 0.02, z = -0.01 }
+Config.CupRotation = { x = -15.0, y = 0.0, z = 0.0 }
 
 Config.PourSound = {
     name = 'Pour',

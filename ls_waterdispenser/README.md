@@ -1,4 +1,4 @@
-# ls_waterdispenser v2.4.0
+# ls_waterdispenser v2.4.1
 
 Drink from existing Rockstar water coolers (`prop_watercooler`).
 Free water, +30% thirst, cup in hand, fill NUI.
@@ -22,7 +22,7 @@ ls_waterdispenser/
 1. Delete any old `ls_waterdispenser` folder
 2. Put this folder in resources
 3. `ensure ox_lib` / `ox_target` / `qbx_core` / `17mov_Hud` / `ls_waterdispenser`
-4. Console must show: `[ls_waterdispenser] v2.4.0 loaded`
+4. Console must show: `[ls_waterdispenser] v2.4.1 loaded`
 
 Download:
 https://codeload.github.com/mraprokothegamer/legendscave/zip/refs/heads/cursor/water-dispenser-resource-b357

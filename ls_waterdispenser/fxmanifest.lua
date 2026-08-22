@@ -4,7 +4,7 @@ game 'gta5'
 name 'ls_waterdispenser'
 author 'legendscave'
 description 'Drink from existing water coolers (ox_target + NUI + cup)'
-version '2.4.0'
+version '2.4.1'
 
 lua54 'yes'
 
