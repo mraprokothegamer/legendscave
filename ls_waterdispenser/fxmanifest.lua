@@ -4,7 +4,7 @@ game 'gta5'
 name 'ls_waterdispenser'
 author 'legendscave'
 description 'Existing Rockstar water coolers — free drink, left-hand cup, auto-hiding NUI'
-version '2.3.1'
+version '2.3.2'
 
 lua54 'yes'
 

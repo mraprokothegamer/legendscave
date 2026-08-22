@@ -1,7 +1,10 @@
 --[[
     ls_waterdispenser client — self-contained (cup + drink + NUI)
     No separate Prop file required.
+    VERSION: 2.3.2
 ]]
+
+print('^2[ls_waterdispenser] client/main.lua v2.3.2 loaded (self-contained, no Prop module)^0')
 
 local registeredModels = {}
 local isDrinking = false
