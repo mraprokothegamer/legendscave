@@ -3,66 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Legendscave Jukebox</title>
+  <title>Legendscave Mini</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app" class="hidden" aria-hidden="true">
-    <div class="console">
-      <header class="brand-bar">
-        <p class="brand">LEGENDSCAVE</p>
-        <button type="button" class="close-btn" id="closeBtn" aria-label="Close">✕</button>
-      </header>
+    <div class="ipod" role="application" aria-label="Legendscave mini player">
+      <button type="button" class="ipod__close" id="closeBtn" aria-label="Close">×</button>
 
-      <section class="stage">
-        <h1 class="headline">Jukebox</h1>
-        <p class="sub">Local speaker · YouTube · nearby only</p>
+      <div class="ipod__shell">
+        <p class="ipod__wordmark">LEGENDSCAVE</p>
 
-        <div class="eq" id="eq" aria-hidden="true">
-          <span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span>
-        </div>
+        <div class="ipod__bezel">
+          <div class="lcd" id="lcd">
+            <section class="lcd-view is-active" data-view="now" id="viewNow">
+              <header class="lcd-bar">
+                <span class="lcd-bar__brand">LEGENDSCAVE</span>
+                <span class="lcd-bar__battery" aria-hidden="true">▮▮▮</span>
+              </header>
+              <p class="lcd-eyebrow" id="lcdStatus">Ready</p>
+              <p class="lcd-title" id="nowTitle">Select a track</p>
+              <p class="lcd-artist" id="nowArtist">—</p>
+              <div class="lcd-eq" id="eq" aria-hidden="true">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="lcd-progress">
+                <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="time-counter">
+                  <span id="elapsed">0:00</span>
+                  <span id="duration">0:00</span>
+                </div>
+              </div>
+            </section>
 
-        <button type="button" class="play-ring" id="playBtn" aria-label="Play or stop">
-          <span class="play-ring__glow"></span>
-          <span class="play-ring__core" id="playIcon">▶</span>
-        </button>
+            <section class="lcd-view" data-view="menu" id="viewMenu">
+              <header class="lcd-bar">
+                <span class="lcd-bar__brand">Menu</span>
+                <span class="lcd-bar__hint">wheel</span>
+              </header>
+              <ul class="menu-list" id="playlist" aria-label="Playlist"></ul>
+            </section>
 
-        <div class="now">
-          <p class="now__title" id="nowTitle">Select a track</p>
-          <p class="now__artist" id="nowArtist">—</p>
-        </div>
-
-        <div class="progress-wrap">
-          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-fill" id="progressFill"></div>
+            <section class="lcd-view" data-view="url" id="viewUrl">
+              <header class="lcd-bar">
+                <span class="lcd-bar__brand">Paste URL</span>
+              </header>
+              <p class="lcd-hint">YouTube link or video ID</p>
+              <input id="ytUrl" class="lcd-input" type="text" placeholder="youtube.com/watch?v=…" autocomplete="off" spellcheck="false" />
+              <button type="button" class="lcd-go" id="playCustomBtn">Play</button>
+            </section>
           </div>
-          <div class="time-counter">
-            <span id="elapsed">0:00</span>
-            <span class="time-sep">/</span>
-            <span id="duration">0:00</span>
-          </div>
         </div>
-      </section>
 
-      <section class="controls">
-        <button type="button" class="ctrl" id="prevBtn" aria-label="Previous">⏮</button>
-        <button type="button" class="ctrl" id="stopBtn" aria-label="Stop">■</button>
-        <button type="button" class="ctrl" id="nextBtn" aria-label="Next">⏭</button>
-      </section>
-
-      <section class="custom">
-        <label class="custom__label" for="ytUrl">YouTube URL or ID</label>
-        <div class="custom__row">
-          <input id="ytUrl" type="text" placeholder="https://youtube.com/watch?v=…" autocomplete="off" />
-          <button type="button" id="playCustomBtn">Play</button>
+        <div class="wheel" id="wheel" aria-label="Click wheel">
+          <button type="button" class="wheel__seg wheel__seg--menu" id="menuBtn" aria-label="Menu">MENU</button>
+          <button type="button" class="wheel__seg wheel__seg--prev" id="prevBtn" aria-label="Previous">⏮</button>
+          <button type="button" class="wheel__seg wheel__seg--next" id="nextBtn" aria-label="Next">⏭</button>
+          <button type="button" class="wheel__seg wheel__seg--play" id="playBtn" aria-label="Play or stop">
+            <span id="playIcon">▶❚❚</span>
+          </button>
+          <button type="button" class="wheel__center" id="selectBtn" aria-label="Select">
+            <span class="wheel__center-label">SELECT</span>
+          </button>
         </div>
-      </section>
-
-      <section class="playlist" id="playlist" aria-label="Playlist"></section>
+      </div>
     </div>
   </div>
   <script src="app.js"></script>
