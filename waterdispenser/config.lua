@@ -10,6 +10,12 @@ Config.Framework = 'auto'
 Config.Hud = '17mov_Hud'
 Config.HudResource = '17mov_Hud'
 
+-- NUI position: 'bottom-right' (far right edge) or 'bottom-left'
+Config.NuiPosition = 'bottom-right'
+
+-- Pixels from right edge of screen for fill UI (lower = further right)
+Config.NuiPaddingRight = 4
+
 -- ox_target settings
 Config.TargetLabel = 'Drink Water'
 Config.TargetDistance = 2.0
@@ -34,11 +40,12 @@ Config.FillDuration = 7000
 Config.SipDelay = 400
 Config.AnimDuration = Config.FillDuration + 2500
 
--- Cup prop attachment
+-- Cup prop attachment (left hand bone 18905 = SKEL_L_Hand)
 Config.CupModel = `prop_cs_paper_cup`
-Config.CupBone = 57005
-Config.CupOffset = { x = 0.13, y = 0.02, z = -0.02 }
-Config.CupRotation = { x = 240.0, y = 0.0, z = 0.0 }
+Config.CupModelFallback = `prop_plastic_cup_02`
+Config.CupBone = 18905
+Config.CupOffset = { x = 0.12, y = 0.028, z = 0.001 }
+Config.CupRotation = { x = 10.0, y = 175.0, z = 0.0 }
 
 -- Sounds
 Config.PourSound = {

@@ -4,7 +4,7 @@ game 'gta5'
 name 'waterdispenser'
 author 'legendscave'
 description 'Production-ready emergency water dispensers for Qbox/ESX with ox_target, 17mov_Hud, and immersive NUI'
-version '2.0.0'
+version '2.0.4'
 
 lua54 'yes'
 
@@ -24,6 +24,7 @@ shared_scripts {
 
 client_scripts {
     'client/hud.lua',
+    'client/prop.lua',
     'client/main.lua',
 }
 

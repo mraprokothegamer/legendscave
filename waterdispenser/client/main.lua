@@ -1,6 +1,5 @@
 local registeredModels = {}
 local isDrinking = false
-local cupEntity = nil
 
 local function debugPrint(message)
     if Config.Debug then
@@ -12,6 +11,8 @@ local function showFillNui(duration)
     SendNUIMessage({
         action = 'startFill',
         duration = duration,
+        position = Config.NuiPosition or 'bottom-right',
+        paddingRight = Config.NuiPaddingRight or 4,
     })
 end
 
@@ -21,57 +22,54 @@ local function hideFillNui()
     })
 end
 
-local function loadModel(model)
-    if not IsModelValid(model) then
+local function loadAnimDict(dict)
+    if not dict then
         return false
     end
 
-    RequestModel(model)
-
-    local timeout = GetGameTimer() + 5000
-    while not HasModelLoaded(model) do
-        if GetGameTimer() > timeout then
-            return false
-        end
-        Wait(10)
-    end
-
-    return true
+    lib.requestAnimDict(dict, 5000)
+    return HasAnimDictLoaded(dict)
 end
 
-local function loadAnimDict(dict)
-    RequestAnimDict(dict)
-
-    local timeout = GetGameTimer() + 5000
-    while not HasAnimDictLoaded(dict) do
-        if GetGameTimer() > timeout then
-            return false
-        end
-        Wait(10)
+local function playDrinkAnim(ped)
+    if not loadAnimDict(Config.AnimDict) then
+        return false
     end
+
+    TaskPlayAnim(
+        ped,
+        Config.AnimDict,
+        Config.AnimName,
+        8.0,
+        -8.0,
+        Config.AnimDuration,
+        49,
+        0.0,
+        false,
+        false,
+        false
+    )
 
     return true
-end
-
-local function cleanupCup()
-    if cupEntity and DoesEntityExist(cupEntity) then
-        DeleteObject(cupEntity)
-    end
-
-    cupEntity = nil
-    SetModelAsNoLongerNeeded(Config.CupModel)
 end
 
 local function cancelDrinkSequence()
     hideFillNui()
     ClearPedSecondaryTask(PlayerPedId())
-    cleanupCup()
+    Prop.cleanup()
     lib.callback.await('waterdispenser:cancelDrink', false)
     isDrinking = false
 end
 
 local function playDrinkSequence()
     if isDrinking then
+        return
+    end
+
+    local playerPed = PlayerPedId()
+
+    if IsPedInAnyVehicle(playerPed, false) then
+        lib.notify({ type = 'error', description = 'You cannot drink while in a vehicle.' })
         return
     end
 
@@ -89,7 +87,6 @@ local function playDrinkSequence()
     end
 
     CreateThread(function()
-        local playerPed = PlayerPedId()
         local completed = false
 
         local function finish()
@@ -100,65 +97,29 @@ local function playDrinkSequence()
             completed = true
             hideFillNui()
             ClearPedSecondaryTask(playerPed)
-            cleanupCup()
+            Prop.cleanup()
             isDrinking = false
         end
 
-        if not loadModel(Config.CupModel) then
+        playDrinkAnim(playerPed)
+        Wait(350)
+
+        if not Prop.spawnInHand(playerPed) then
             lib.notify({
                 type = 'error',
-                description = 'Unable to load cup prop.',
+                description = 'Unable to attach cup prop.',
             })
             lib.callback.await('waterdispenser:cancelDrink', false)
+            ClearPedSecondaryTask(playerPed)
             isDrinking = false
             return
         end
 
-        local coords = GetEntityCoords(playerPed)
-        cupEntity = CreateObject(Config.CupModel, coords.x, coords.y, coords.z, true, true, false)
-
-        if not cupEntity or not DoesEntityExist(cupEntity) then
-            cleanupCup()
-            lib.callback.await('waterdispenser:cancelDrink', false)
-            isDrinking = false
-            return
-        end
-
-        AttachEntityToEntity(
-            cupEntity,
-            playerPed,
-            GetPedBoneIndex(playerPed, Config.CupBone),
-            Config.CupOffset.x,
-            Config.CupOffset.y,
-            Config.CupOffset.z,
-            Config.CupRotation.x,
-            Config.CupRotation.y,
-            Config.CupRotation.z,
-            true,
-            true,
-            false,
-            true,
-            1,
-            true
-        )
-
+        local cup = Prop.getEntity()
         showFillNui(Config.FillDuration)
-        PlaySoundFromEntity(-1, Config.PourSound.name, cupEntity, Config.PourSound.bank, false, 0)
 
-        if loadAnimDict(Config.AnimDict) then
-            TaskPlayAnim(
-                playerPed,
-                Config.AnimDict,
-                Config.AnimName,
-                3.0,
-                -1,
-                Config.AnimDuration,
-                49,
-                0.0,
-                false,
-                false,
-                false
-            )
+        if cup and DoesEntityExist(cup) then
+            PlaySoundFromEntity(-1, Config.PourSound.name, cup, Config.PourSound.bank, false, 0)
         end
 
         local fillStarted = GetGameTimer()
@@ -175,7 +136,6 @@ local function playDrinkSequence()
         end
 
         hideFillNui()
-
         Wait(Config.SipDelay)
         PlaySoundFromEntity(-1, Config.SipSound.name, playerPed, Config.SipSound.bank, false, 0)
 
@@ -280,12 +240,20 @@ CreateThread(function()
     scanWorldForDispensers()
 
     debugPrint('Initial dispenser scan complete.')
+end)
 
+CreateThread(function()
     while true do
         Wait(Config.RescanInterval)
         scanWorldForDispensers()
     end
 end)
+
+if Config.Debug then
+    RegisterCommand('testwater', function()
+        playDrinkSequence()
+    end, false)
+end
 
 AddEventHandler('onResourceStop', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then
@@ -293,6 +261,6 @@ AddEventHandler('onResourceStop', function(resourceName)
     end
 
     hideFillNui()
-    cleanupCup()
+    Prop.cleanup()
     isDrinking = false
 end)

@@ -1,9 +1,24 @@
+const nuiRoot = document.getElementById('nui-root');
 const fillUi = document.getElementById('fill-ui');
 const water = document.querySelector('.water');
 const stream = document.querySelector('.stream');
 const progressFill = document.querySelector('.progress-fill');
 const percentLabel = document.querySelector('.percent');
 let fillTimer = null;
+
+function applyPosition(position, paddingRight) {
+    nuiRoot.classList.remove('pos-bottom-right', 'pos-bottom-left');
+
+    if (position === 'bottom-left') {
+        nuiRoot.classList.add('pos-bottom-left');
+        nuiRoot.style.padding = '0 0 100px 32px';
+        return;
+    }
+
+    nuiRoot.classList.add('pos-bottom-right');
+    const pad = typeof paddingRight === 'number' ? paddingRight : 4;
+    nuiRoot.style.padding = `0 ${pad}px 100px 0`;
+}
 
 function resetFillUi() {
     if (fillTimer) {
@@ -26,8 +41,9 @@ function updateProgress(progress) {
     percentLabel.textContent = `${Math.round(clamped)}%`;
 }
 
-function startFill(duration) {
+function startFill(duration, position, paddingRight) {
     resetFillUi();
+    applyPosition(position || 'bottom-right', paddingRight);
 
     fillUi.classList.remove('hidden');
     requestAnimationFrame(() => {
@@ -53,6 +69,8 @@ function startFill(duration) {
     }, stepMs);
 }
 
+applyPosition('bottom-right');
+
 window.addEventListener('message', (event) => {
     const data = event.data;
 
@@ -61,7 +79,7 @@ window.addEventListener('message', (event) => {
     }
 
     if (data.action === 'startFill') {
-        startFill(data.duration);
+        startFill(data.duration, data.position, data.paddingRight);
     }
 
     if (data.action === 'hideFill') {
