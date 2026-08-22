@@ -3,8 +3,8 @@ game 'gta5'
 
 name 'ls_waterdispenser'
 author 'legendscave'
-description 'Rockstar water coolers via ox_target — paid drink, cup prop, NUI, Qbox/ESX'
-version '2.0.7'
+description 'Existing Rockstar water coolers — ox_target, paid drink, right-hand cup, NUI'
+version '2.0.8'
 
 lua54 'yes'
 
@@ -24,7 +24,6 @@ shared_scripts {
 
 client_scripts {
     'client/hud.lua',
-    'client/prop.lua',
     'client/main.lua',
 }
 

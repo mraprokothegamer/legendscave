@@ -1,10 +1,10 @@
 fx_version 'cerulean'
 game 'gta5'
 
-name 'waterdispenser'
+name 'ls_waterdispenser'
 author 'legendscave'
-description 'Production-ready emergency water dispensers for Qbox/ESX with ox_target, 17mov_Hud, and immersive NUI'
-version '2.0.7'
+description 'Existing Rockstar water coolers — ox_target, paid drink, right-hand cup, NUI'
+version '2.0.8'
 
 lua54 'yes'
 
@@ -24,7 +24,6 @@ shared_scripts {
 
 client_scripts {
     'client/hud.lua',
-    'client/prop.lua',
     'client/main.lua',
 }
 
@@ -37,6 +36,3 @@ dependencies {
     'ox_lib',
     'ox_target',
 }
-
--- Framework (auto-detected): qbx_core | qb-core | es_extended + esx_status
--- HUD (configured): 17mov_Hud recommended for Qbox
