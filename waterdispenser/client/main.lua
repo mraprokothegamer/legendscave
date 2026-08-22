@@ -154,6 +154,14 @@ local function playDrinkSequence()
     end)
 end
 
+local function getDrinkLabel()
+    if Config.FreeWater or (Config.WaterPrice or 0) <= 0 then
+        return 'Drink Water'
+    end
+
+    return ('Drink Water ($%s)'):format(Config.WaterPrice)
+end
+
 local function registerDispenser(model)
     if registeredModels[model] then
         return
@@ -164,7 +172,7 @@ local function registerDispenser(model)
     exports.ox_target:addModel(model, {
         {
             name = 'waterdispenser_drink_water',
-            label = Config.TargetLabel or 'Drink Water',
+            label = getDrinkLabel(),
             icon = 'fa-solid fa-glass-water',
             distance = Config.TargetDistance or 2.0,
             onSelect = function()
