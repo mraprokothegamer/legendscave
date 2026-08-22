@@ -11,12 +11,14 @@ local function showFillNui(duration)
     SetNuiFocus(false, false)
     SendNUIMessage({
         action = 'startFill',
-        duration = duration,
-        position = Config.NuiPosition or 'near-player',
+        duration = duration or Config.FillDuration or 7000,
     })
 end
 
 local function hideFillNui()
+    -- Force-close fill UI (send twice for CEF reliability)
+    SendNUIMessage({ action = 'hideFill' })
+    SendNUIMessage({ action = 'forceHide' })
     SendNUIMessage({ action = 'hideFill' })
 end
 
@@ -31,22 +33,21 @@ local function playDrinkAnim(ped)
         Wait(10)
     end
 
-    TaskPlayAnim(ped, dict, name, 8.0, -8.0, Config.AnimDuration or 9500, 49, 0.0, false, false, false)
+    TaskPlayAnim(ped, dict, name, 8.0, -8.0, -1, 49, 0.0, false, false, false)
     return true
 end
 
 local function getDrinkLabel()
-    if Config.FreeWater or (Config.WaterPrice or 0) <= 0 then
-        return 'Drink Water'
-    end
-    return ('Drink Water ($%s)'):format(Config.WaterPrice)
+    return 'Drink Water'
 end
 
-local function cancelDrinkSequence()
+local function hardCleanup(ped)
     hideFillNui()
-    ClearPedSecondaryTask(PlayerPedId())
+    if ped and DoesEntityExist(ped) then
+        ClearPedSecondaryTask(ped)
+        StopAnimTask(ped, Config.AnimDict or 'mp_player_intdrink', Config.AnimName or 'loop_bottle', 1.0)
+    end
     Prop.cleanup()
-    lib.callback.await('waterdispenser:cancelDrink', false)
     isDrinking = false
 end
 
@@ -70,51 +71,81 @@ local function playDrinkSequence()
     end
 
     CreateThread(function()
-        playDrinkAnim(playerPed)
-        showFillNui(Config.FillDuration or 7000)
-        Wait(350)
-
-        local cup = Prop.attachCup()
-        if cup and DoesEntityExist(cup) then
-            PlaySoundFromEntity(-1, Config.PourSound.name, cup, Config.PourSound.bank, false, 0)
-        else
-            PlaySoundFromEntity(-1, Config.PourSound.name, playerPed, Config.PourSound.bank, false, 0)
-        end
-
-        local fillStarted = GetGameTimer()
+        local remark = nil
         local fillDuration = Config.FillDuration or 7000
 
-        while GetGameTimer() - fillStarted < fillDuration do
-            if IsEntityDead(playerPed) then
-                cancelDrinkSequence()
-                return
+        local ok, err = pcall(function()
+            playDrinkAnim(playerPed)
+            Wait(150)
+
+            -- Attach cup FIRST so it is visible during fill
+            local cup = Prop.attachCup()
+            if not cup then
+                debugPrint('Cup attach failed — retrying once')
+                Wait(100)
+                cup = Prop.attachCup()
             end
-            DisableControlAction(0, 24, true)
-            DisableControlAction(0, 25, true)
-            DisableControlAction(0, 44, true)
-            Wait(0)
+
+            showFillNui(fillDuration)
+
+            if cup and DoesEntityExist(cup) then
+                PlaySoundFromEntity(-1, Config.PourSound.name, cup, Config.PourSound.bank, false, 0)
+            else
+                PlaySoundFromEntity(-1, Config.PourSound.name, playerPed, Config.PourSound.bank, false, 0)
+            end
+
+            local fillStarted = GetGameTimer()
+            while GetGameTimer() - fillStarted < fillDuration do
+                if IsEntityDead(playerPed) then
+                    error('player_dead')
+                end
+
+                -- Keep cup attached if something detached it
+                local currentCup = Prop.getEntity()
+                if not currentCup or not DoesEntityExist(currentCup) or not IsEntityAttachedToEntity(currentCup, playerPed) then
+                    Prop.attachCup()
+                end
+
+                if not IsEntityPlayingAnim(playerPed, Config.AnimDict, Config.AnimName, 3) then
+                    playDrinkAnim(playerPed)
+                end
+
+                DisableControlAction(0, 24, true)
+                DisableControlAction(0, 25, true)
+                DisableControlAction(0, 44, true)
+                Wait(0)
+            end
+
+            -- Close NUI immediately when fill completes
+            hideFillNui()
+            Wait(50)
+            hideFillNui()
+
+            Wait(Config.SipDelay or 400)
+            PlaySoundFromEntity(-1, Config.SipSound.name, playerPed, Config.SipSound.bank, false, 0)
+
+            remark = lib.callback.await('waterdispenser:drinkWater', false)
+
+            local remaining = (Config.AnimDuration or (fillDuration + 2500)) - fillDuration - (Config.SipDelay or 400)
+            if remaining > 0 then Wait(remaining) end
+        end)
+
+        if not ok then
+            debugPrint(('Drink error: %s'):format(tostring(err)))
+            pcall(function()
+                lib.callback.await('waterdispenser:cancelDrink', false)
+            end)
         end
 
-        hideFillNui()
-        Wait(Config.SipDelay or 400)
-        PlaySoundFromEntity(-1, Config.SipSound.name, playerPed, Config.SipSound.bank, false, 0)
+        -- ALWAYS run — NUI must never stay on screen
+        hardCleanup(playerPed)
 
-        local remark = lib.callback.await('waterdispenser:drinkWater', false)
-
-        local remaining = (Config.AnimDuration or (fillDuration + 2500)) - fillDuration - (Config.SipDelay or 400)
-        if remaining > 0 then Wait(remaining) end
-
-        ClearPedSecondaryTask(playerPed)
-        Prop.cleanup()
-        isDrinking = false
-
-        if remark then
+        if ok and remark then
             lib.notify({ type = 'inform', description = remark, duration = 5000 })
         end
     end)
 end
 
--- Existing Rockstar water coolers only (does not spawn coolers)
 local function registerDispenser(model)
     if registeredModels[model] then return end
     registeredModels[model] = true
@@ -194,11 +225,16 @@ if Config.Debug then
     RegisterCommand('testwater', function()
         playDrinkSequence()
     end, false)
+
+    RegisterCommand('testcup', function()
+        local cup = Prop.attachCup()
+        print('[ls_waterdispenser] testcup result:', cup)
+        Wait(5000)
+        Prop.cleanup()
+    end, false)
 end
 
 AddEventHandler('onResourceStop', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end
-    hideFillNui()
-    Prop.cleanup()
-    isDrinking = false
+    hardCleanup(PlayerPedId())
 end)

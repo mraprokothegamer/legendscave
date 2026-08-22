@@ -25,12 +25,12 @@ Config.FillDuration = 7000
 Config.SipDelay = 400
 Config.AnimDuration = Config.FillDuration + 2500
 
--- LEFT hand red plastic cup (18905 = SKEL_L_Hand)
-Config.CupModel = `apa_prop_cs_plastic_cup_01`
-Config.CupModelFallback = `prop_plastic_cup_02`
-Config.CupBone = 18905
-Config.CupOffset = { x = 0.12, y = 0.028, z = 0.001 }
-Config.CupRotation = { x = 10.0, y = 175.0, z = 0.0 }
+-- LEFT hand cup (60309 = PH_L_Hand — best bone for handheld props)
+Config.CupModel = `prop_plastic_cup_02`
+Config.CupModelFallback = `apa_prop_cs_plastic_cup_01`
+Config.CupBone = 60309
+Config.CupOffset = { x = 0.13, y = 0.04, z = -0.04 }
+Config.CupRotation = { x = -80.0, y = 0.0, z = -20.0 }
 
 Config.PourSound = {
     name = 'Pour',

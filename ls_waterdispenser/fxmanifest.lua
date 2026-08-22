@@ -3,8 +3,8 @@ game 'gta5'
 
 name 'ls_waterdispenser'
 author 'legendscave'
-description 'Existing Rockstar water coolers — working build, NUI far-right (not blocking)'
-version '2.2.0'
+description 'Existing Rockstar water coolers — free drink, left-hand cup, auto-hiding NUI'
+version '2.2.1'
 
 lua54 'yes'
 
