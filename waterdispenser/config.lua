@@ -1,51 +1,48 @@
 Config = {}
 
--- Set true to print dispenser registration logs to console
+-- Set true for F8 debug logs + /testwater /testnui
 Config.Debug = false
 
 -- Framework: 'auto', 'qbox', or 'esx'
 Config.Framework = 'auto'
 
--- HUD integration: '17mov_Hud', 'auto', or 'default'
+-- HUD: '17mov_Hud', 'auto', or 'default'
 Config.Hud = '17mov_Hud'
 Config.HudResource = '17mov_Hud'
 
--- NUI position: 'bottom-right' (far right edge) or 'bottom-left'
+-- NUI fill panel (far right)
 Config.NuiPosition = 'bottom-right'
-
--- Pixels from right edge of screen for fill UI (lower = further right)
 Config.NuiPaddingRight = 4
 
--- ox_target settings
-Config.TargetLabel = 'Drink Water'
+-- ox_target
 Config.TargetDistance = 2.0
 
--- Emergency city water: free for everyone
-Config.FreeWater = true
+-- Pricing + thirst (original design)
+Config.FreeWater = false
+Config.WaterPrice = 10
+Config.ThirstRefill = 30
 
--- Thirst refill percentage (0-100)
-Config.ThirstRefill = 10
-
--- esx_status max thirst value (ESX only)
+-- esx_status max (ESX only)
 Config.ThirstMax = 1000000
 
--- Anti-spam: max drinks per player per cooldown window
-Config.MaxDrinksPerHour = 2
+-- Optional anti-spam (set EnableCooldown = false to disable)
+Config.EnableCooldown = false
+Config.MaxDrinksPerHour = 10
 Config.CooldownWindow = 60 * 60
 
--- Animation
+-- Animation + fill timing
 Config.AnimDict = 'mp_player_intdrink'
 Config.AnimName = 'loop_bottle'
 Config.FillDuration = 7000
 Config.SipDelay = 400
 Config.AnimDuration = Config.FillDuration + 2500
 
--- Cup prop attachment (left hand bone 18905 = SKEL_L_Hand)
+-- Cup in RIGHT hand (57005 = SKEL_R_Hand) — matches attachCup offsets
 Config.CupModel = `prop_cs_paper_cup`
 Config.CupModelFallback = `prop_plastic_cup_02`
-Config.CupBone = 18905
-Config.CupOffset = { x = 0.12, y = 0.028, z = 0.001 }
-Config.CupRotation = { x = 10.0, y = 175.0, z = 0.0 }
+Config.CupBone = 57005
+Config.CupOffset = { x = 0.12, y = 0.02, z = -0.02 }
+Config.CupRotation = { x = -80.0, y = 0.0, z = 10.0 }
 
 -- Sounds
 Config.PourSound = {
@@ -64,22 +61,21 @@ Config.Remarks = {
     'Cold water on a hot day — nothing better.',
     'My throat was so dry... feeling human again.',
     'Public water never tasted so good.',
-    'Emergency hydration complete. I\'m good for now.',
+    'Worth every dollar. Feeling refreshed.',
 }
 
--- Auto-detect dispensers by prop archetype keyword
+-- Multiple scan keywords (auto-detect props)
 Config.ScanKeywords = {
     'watercooler',
     'dispenser',
     'hydrant',
 }
 
--- Always register these models immediately
+-- Always register these models
 Config.KnownModels = {
     `prop_watercooler`,
     `prop_watercooler_dark`,
 }
 
--- World scan timing
 Config.RescanInterval = 30000
 Config.InitialScanDelay = 5000

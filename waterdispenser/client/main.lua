@@ -106,21 +106,15 @@ local function playDrinkSequence()
         end
 
         playDrinkAnim(playerPed)
-
-        -- Show NUI immediately (do not wait for cup prop — prop failure was hiding UI)
         showFillNui(Config.FillDuration)
-
         Wait(350)
 
-        if not Prop.spawnInHand(playerPed) then
-            debugPrint('Cup prop failed — NUI still running')
-        end
-
-        local cup = Prop.getEntity()
+        local cup = Prop.attachCup()
 
         if cup and DoesEntityExist(cup) then
             PlaySoundFromEntity(-1, Config.PourSound.name, cup, Config.PourSound.bank, false, 0)
         else
+            debugPrint('Cup prop failed — NUI still running')
             PlaySoundFromEntity(-1, Config.PourSound.name, playerPed, Config.PourSound.bank, false, 0)
         end
 
@@ -258,7 +252,8 @@ if Config.Debug then
 
     RegisterCommand('testnui', function()
         showFillNui(5000)
-        SetTimeout(5000, function()
+        CreateThread(function()
+            Wait(5000)
             hideFillNui()
         end)
     end, false)

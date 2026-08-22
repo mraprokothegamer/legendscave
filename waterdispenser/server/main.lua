@@ -28,6 +28,10 @@ local function getCooldownMessage(remainingSeconds)
 end
 
 local function getDrinkStatus(playerKey)
+    if not Config.EnableCooldown then
+        return true, nil, drinkHistory[playerKey] or {}
+    end
+
     local now = os.time()
     local timestamps = drinkHistory[playerKey] or {}
     timestamps = pruneOldDrinks(timestamps, now)
@@ -71,6 +75,18 @@ local function sessionIsValid(source)
     return true
 end
 
+local function getTargetLabel()
+    if Config.FreeWater or Config.WaterPrice <= 0 then
+        return 'Drink Water'
+    end
+
+    return ('Drink Water ($%s)'):format(Config.WaterPrice)
+end
+
+lib.callback.register('waterdispenser:getTargetLabel', function()
+    return getTargetLabel()
+end)
+
 lib.callback.register('waterdispenser:canDrink', function(source)
     if not Framework.isReady() then
         return false, 'Dispenser system is unavailable.'
@@ -84,6 +100,12 @@ lib.callback.register('waterdispenser:canDrink', function(source)
 
     if not player then
         return false, 'Unable to use the dispenser right now.'
+    end
+
+    local price = (Config.FreeWater and 0) or (Config.WaterPrice or 0)
+
+    if price > 0 and Framework.getMoney(player) < price then
+        return false, ('Not enough money! You need $%s.'):format(price)
     end
 
     local playerKey = Framework.getPlayerKey(player)
@@ -130,8 +152,21 @@ lib.callback.register('waterdispenser:drinkWater', function(source)
         return nil
     end
 
-    timestamps[#timestamps + 1] = os.time()
-    drinkHistory[playerKey] = timestamps
+    local price = (Config.FreeWater and 0) or (Config.WaterPrice or 0)
+
+    if price > 0 and not Framework.removeMoney(player, price) then
+        clearSession(source)
+        TriggerClientEvent('ox_lib:notify', source, {
+            type = 'error',
+            description = 'Not enough money to buy water!',
+        })
+        return nil
+    end
+
+    if Config.EnableCooldown then
+        timestamps[#timestamps + 1] = os.time()
+        drinkHistory[playerKey] = timestamps
+    end
 
     if not Framework.addThirst(source, player, Config.ThirstRefill) then
         clearSession(source)
@@ -141,10 +176,17 @@ lib.callback.register('waterdispenser:drinkWater', function(source)
     clearSession(source)
 
     local remark = Config.Remarks[math.random(#Config.Remarks)]
+    local description
+
+    if price > 0 then
+        description = ('You paid $%s and refilled thirst by %s%%!'):format(price, Config.ThirstRefill)
+    else
+        description = ('You feel refreshed (+ %s%% thirst).'):format(Config.ThirstRefill)
+    end
 
     TriggerClientEvent('ox_lib:notify', source, {
         type = 'success',
-        description = ('You feel refreshed (+ %s%% thirst).'):format(Config.ThirstRefill),
+        description = description,
     })
 
     return remark

@@ -1,5 +1,6 @@
 Prop = {}
 
+local CUP_MODEL = `prop_cs_paper_cup`
 local cupEntity = nil
 
 local function debugPrint(message)
@@ -8,88 +9,73 @@ local function debugPrint(message)
     end
 end
 
-function Prop.cleanup()
-    if cupEntity and DoesEntityExist(cupEntity) then
-        DetachEntity(cupEntity, true, true)
-        DeleteEntity(cupEntity)
-    end
+--- Attach paper cup to the player's RIGHT hand (bone 57005).
+---@return number|nil cup entity handle
+local function attachCup()
+    local model = Config.CupModel or CUP_MODEL
 
-    cupEntity = nil
-end
+    lib.requestModel(model)
 
-local function tryLoadModel(model)
-    if not model or not IsModelValid(model) then
-        return false
-    end
-
-    lib.requestModel(model, 5000)
-    return HasModelLoaded(model)
-end
-
-local function createCupObject(model, ped)
+    local ped = PlayerPedId()
     local coords = GetEntityCoords(ped)
-    local object = CreateObject(model, coords.x, coords.y, coords.z + 0.2, false, false, false)
+    local cup = CreateObject(model, coords.x, coords.y, coords.z, true, true, false)
 
-    if not object or object == 0 or not DoesEntityExist(object) then
+    if not cup or cup == 0 or not DoesEntityExist(cup) then
+        SetModelAsNoLongerNeeded(model)
         return nil
     end
 
-    SetEntityAsMissionEntity(object, true, true)
-    SetEntityCollision(object, false, false)
-    SetEntityCompletelyDisableCollision(object, true, true)
-    SetEntityVisible(object, true, false)
-    SetEntityAlpha(object, 255, false)
-
-    return object
-end
-
-local function attachCupToHand(object, ped)
-    local boneIndex = GetPedBoneIndex(ped, Config.CupBone)
-
+    -- 57005 = SKEL_R_Hand (right hand)
     AttachEntityToEntity(
-        object,
+        cup,
         ped,
-        boneIndex,
+        GetPedBoneIndex(ped, Config.CupBone or 57005),
         Config.CupOffset.x,
         Config.CupOffset.y,
         Config.CupOffset.z,
         Config.CupRotation.x,
         Config.CupRotation.y,
         Config.CupRotation.z,
+        true,
+        true,
         false,
-        false,
-        false,
-        false,
-        2,
+        true,
+        1,
         true
     )
+
+    SetModelAsNoLongerNeeded(model)
+    return cup
 end
 
-function Prop.spawnInHand(ped)
-    Prop.cleanup()
-
-    local models = { Config.CupModel, Config.CupModelFallback }
-
-    for i = 1, #models do
-        local model = models[i]
-
-        if model and tryLoadModel(model) then
-            local object = createCupObject(model, ped)
-
-            if object then
-                attachCupToHand(object, ped)
-                cupEntity = object
-                SetModelAsNoLongerNeeded(model)
-                debugPrint(('Cup attached to left hand using model hash: %s'):format(model))
-                return true
-            end
-
-            SetModelAsNoLongerNeeded(model)
-        end
+function Prop.cleanup()
+    if cupEntity and DoesEntityExist(cupEntity) then
+        DetachEntity(cupEntity, true, true)
+        DeleteObject(cupEntity)
     end
 
-    debugPrint('Failed to spawn cup prop.')
-    return false
+    cupEntity = nil
+end
+
+--- Spawn and attach cup to right hand. Returns the cup entity.
+---@return number|nil
+function Prop.attachCup()
+    Prop.cleanup()
+
+    local cup = attachCup()
+
+    if not cup then
+        debugPrint('Failed to attach cup to right hand.')
+        return nil
+    end
+
+    cupEntity = cup
+    debugPrint('Cup attached to RIGHT hand (bone 57005)')
+    return cup
+end
+
+function Prop.spawnInHand()
+    return Prop.attachCup() ~= nil
 end
 
 function Prop.getEntity()

@@ -120,6 +120,46 @@ function Framework.getPlayerKey(player)
     return nil
 end
 
+function Framework.removeMoney(player, amount)
+    if amount <= 0 then
+        return true
+    end
+
+    if activeFramework == 'qbox' then
+        local cash = player.PlayerData.money and player.PlayerData.money.cash or 0
+
+        if cash < amount then
+            return false
+        end
+
+        player.Functions.RemoveMoney('cash', amount, 'water-dispenser')
+        return true
+    end
+
+    if activeFramework == 'esx' then
+        if player.getMoney() < amount then
+            return false
+        end
+
+        player.removeMoney(amount)
+        return true
+    end
+
+    return false
+end
+
+function Framework.getMoney(player)
+    if activeFramework == 'qbox' then
+        return player.PlayerData.money and player.PlayerData.money.cash or 0
+    end
+
+    if activeFramework == 'esx' then
+        return player.getMoney()
+    end
+
+    return 0
+end
+
 function Framework.addThirst(source, player, refillPercent)
     if activeFramework == 'qbox' then
         local current = player.PlayerData.metadata.thirst or 0
