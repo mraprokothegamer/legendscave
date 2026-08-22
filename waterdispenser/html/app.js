@@ -7,6 +7,8 @@ const percentLabel = document.querySelector('.percent');
 let fillTimer = null;
 
 function applyPosition(position, paddingRight) {
+    if (!nuiRoot) return;
+
     nuiRoot.classList.remove('pos-bottom-right', 'pos-bottom-left');
 
     if (position === 'bottom-left') {
@@ -16,8 +18,21 @@ function applyPosition(position, paddingRight) {
     }
 
     nuiRoot.classList.add('pos-bottom-right');
-    const pad = typeof paddingRight === 'number' ? paddingRight : 4;
-    nuiRoot.style.padding = `0 ${pad}px 100px 0`;
+    const pad = Number(paddingRight);
+    const safePad = Number.isFinite(pad) ? pad : 4;
+    nuiRoot.style.padding = `0 ${safePad}px 100px 0`;
+}
+
+function setFillOpen(isOpen) {
+    if (!fillUi) return;
+
+    if (isOpen) {
+        fillUi.classList.remove('hidden');
+        fillUi.classList.add('visible');
+    } else {
+        fillUi.classList.remove('visible');
+        fillUi.classList.add('hidden');
+    }
 }
 
 function resetFillUi() {
@@ -26,32 +41,36 @@ function resetFillUi() {
         fillTimer = null;
     }
 
-    water.style.height = '0%';
-    progressFill.style.width = '0%';
-    percentLabel.textContent = '0%';
-    stream.classList.remove('active');
-    fillUi.classList.remove('visible');
-    fillUi.classList.add('hidden');
+    if (water) water.style.height = '0%';
+    if (progressFill) progressFill.style.width = '0%';
+    if (percentLabel) percentLabel.textContent = '0%';
+    if (stream) stream.classList.remove('active');
+    setFillOpen(false);
 }
 
 function updateProgress(progress) {
     const clamped = Math.min(Math.max(progress, 0), 100);
-    water.style.height = `${clamped}%`;
-    progressFill.style.width = `${clamped}%`;
-    percentLabel.textContent = `${Math.round(clamped)}%`;
+    if (water) water.style.height = `${clamped}%`;
+    if (progressFill) progressFill.style.width = `${clamped}%`;
+    if (percentLabel) percentLabel.textContent = `${Math.round(clamped)}%`;
 }
 
 function startFill(duration, position, paddingRight) {
-    resetFillUi();
+    if (fillTimer) {
+        clearInterval(fillTimer);
+        fillTimer = null;
+    }
+
+    if (water) water.style.height = '0%';
+    if (progressFill) progressFill.style.width = '0%';
+    if (percentLabel) percentLabel.textContent = '0%';
+
     applyPosition(position || 'bottom-right', paddingRight);
+    setFillOpen(true);
 
-    fillUi.classList.remove('hidden');
-    requestAnimationFrame(() => {
-        fillUi.classList.add('visible');
-        stream.classList.add('active');
-    });
+    if (stream) stream.classList.add('active');
 
-    const totalMs = Math.max(duration || 7000, 5000);
+    const totalMs = Math.max(Number(duration) || 7000, 5000);
     const stepMs = 50;
     const steps = Math.ceil(totalMs / stepMs);
     let currentStep = 0;
@@ -69,7 +88,7 @@ function startFill(duration, position, paddingRight) {
     }, stepMs);
 }
 
-applyPosition('bottom-right');
+applyPosition('bottom-right', 4);
 
 window.addEventListener('message', (event) => {
     const data = event.data;

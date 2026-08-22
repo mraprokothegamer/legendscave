@@ -8,12 +8,16 @@ local function debugPrint(message)
 end
 
 local function showFillNui(duration)
+    SetNuiFocus(false, false)
+
     SendNUIMessage({
         action = 'startFill',
         duration = duration,
         position = Config.NuiPosition or 'bottom-right',
         paddingRight = Config.NuiPaddingRight or 4,
     })
+
+    debugPrint('NUI fill started')
 end
 
 local function hideFillNui()
@@ -102,24 +106,22 @@ local function playDrinkSequence()
         end
 
         playDrinkAnim(playerPed)
+
+        -- Show NUI immediately (do not wait for cup prop — prop failure was hiding UI)
+        showFillNui(Config.FillDuration)
+
         Wait(350)
 
         if not Prop.spawnInHand(playerPed) then
-            lib.notify({
-                type = 'error',
-                description = 'Unable to attach cup prop.',
-            })
-            lib.callback.await('waterdispenser:cancelDrink', false)
-            ClearPedSecondaryTask(playerPed)
-            isDrinking = false
-            return
+            debugPrint('Cup prop failed — NUI still running')
         end
 
         local cup = Prop.getEntity()
-        showFillNui(Config.FillDuration)
 
         if cup and DoesEntityExist(cup) then
             PlaySoundFromEntity(-1, Config.PourSound.name, cup, Config.PourSound.bank, false, 0)
+        else
+            PlaySoundFromEntity(-1, Config.PourSound.name, playerPed, Config.PourSound.bank, false, 0)
         end
 
         local fillStarted = GetGameTimer()
@@ -252,6 +254,13 @@ end)
 if Config.Debug then
     RegisterCommand('testwater', function()
         playDrinkSequence()
+    end, false)
+
+    RegisterCommand('testnui', function()
+        showFillNui(5000)
+        SetTimeout(5000, function()
+            hideFillNui()
+        end)
     end, false)
 end
 

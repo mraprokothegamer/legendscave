@@ -34,6 +34,7 @@ body {
 }
 
 .hidden {
+    display: none !important;
     opacity: 0;
     visibility: hidden;
 }
@@ -41,12 +42,16 @@ body {
 #fill-ui {
     position: relative;
     flex-shrink: 0;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.2s ease;
 }
 
 #fill-ui.visible {
-    opacity: 1;
-    visibility: visible;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 .panel {
