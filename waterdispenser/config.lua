@@ -19,11 +19,14 @@ Config.CooldownWindow = 60 * 60
 Config.AnimDict = 'mp_player_intdrink'
 Config.AnimName = 'loop_bottle'
 
--- How long the drink animation runs (ms)
-Config.AnimDuration = 2500
+-- How long the NUI cup-fill animation runs (ms) — 5 to 10 seconds
+Config.FillDuration = 7000
 
--- How long the NUI cup-fill animation runs (ms)
-Config.FillDuration = 1800
+-- Brief pause after fill before sip sound (ms)
+Config.SipDelay = 400
+
+-- Total drink animation length (should cover fill + sip)
+Config.AnimDuration = Config.FillDuration + 2500
 
 -- Cup prop model and hand attachment offsets
 Config.CupModel = `prop_cs_paper_cup`

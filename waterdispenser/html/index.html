@@ -10,16 +10,35 @@
     <div id="fill-ui" class="hidden">
         <div class="panel">
             <div class="title">Filling cup</div>
-            <div class="cup-wrap">
-                <div class="cup">
-                    <div class="water">
-                        <div class="wave wave-1"></div>
-                        <div class="wave wave-2"></div>
-                    </div>
+
+            <div class="dispenser-stack">
+                <div class="nozzle">
+                    <div class="nozzle-tip"></div>
                 </div>
                 <div class="stream"></div>
+
+                <div class="cup-wrap">
+                    <div class="cup">
+                        <div class="water">
+                            <div class="surface">
+                                <div class="wave wave-1"></div>
+                                <div class="wave wave-2"></div>
+                            </div>
+                        </div>
+                        <div class="cup-shine"></div>
+                    </div>
+                </div>
             </div>
-            <div class="hint">Hold still...</div>
+
+            <div class="progress-wrap">
+                <div class="progress-track">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-label">
+                    <span class="hint">Hold still...</span>
+                    <span class="percent">0%</span>
+                </div>
+            </div>
         </div>
     </div>
     <script src="app.js"></script>

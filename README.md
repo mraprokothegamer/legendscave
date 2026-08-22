@@ -34,7 +34,7 @@ Auto-detecting emergency water dispenser resource with:
 | `Config.ThirstRefill` | `10` | Emergency thirst restored (percent) |
 | `Config.MaxDrinksPerHour` | `2` | Max drinks per player per hour |
 | `Config.CooldownWindow` | `3600` | Cooldown window in seconds |
-| `Config.FillDuration` | `1800` | NUI cup-fill animation length (ms) |
+| `Config.FillDuration` | `7000` | NUI vertical cup-fill animation (ms, 5–10s) |
 | `Config.Remarks` | 5 lines | Random post-drink player remarks |
 | `Config.ScanKeywords` | watercooler, dispenser, hydrant | Archetype name keywords for auto-scan |
 | `Config.KnownModels` | prop_watercooler variants | Models registered without scanning |

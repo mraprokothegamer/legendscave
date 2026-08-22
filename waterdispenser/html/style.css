@@ -20,91 +20,144 @@ body {
 
 #fill-ui {
     position: fixed;
-    right: 3vw;
-    bottom: 18vh;
-    transition: opacity 0.25s ease, visibility 0.25s ease;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -42%) scale(0.92);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
 }
 
 #fill-ui.visible {
     opacity: 1;
     visibility: visible;
+    transform: translate(-50%, -42%) scale(1);
 }
 
 .panel {
-    width: 150px;
-    padding: 14px 16px 16px;
-    border-radius: 14px;
-    background: rgba(12, 20, 32, 0.82);
-    border: 1px solid rgba(120, 190, 255, 0.35);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(8px);
+    width: 190px;
+    padding: 18px 20px 20px;
+    border-radius: 18px;
+    background: rgba(8, 16, 28, 0.88);
+    border: 1px solid rgba(120, 190, 255, 0.4);
+    box-shadow:
+        0 0 40px rgba(60, 140, 220, 0.15),
+        0 16px 40px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(10px);
     text-align: center;
 }
 
 .title {
-    color: #d9ecff;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    color: #e8f4ff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 }
 
-.hint {
-    margin-top: 10px;
-    color: rgba(200, 225, 255, 0.75);
-    font-size: 11px;
+.dispenser-stack {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 260px;
+    margin-bottom: 16px;
+}
+
+.nozzle {
+    width: 34px;
+    height: 14px;
+    border-radius: 6px 6px 2px 2px;
+    background: linear-gradient(180deg, #b8c8d8, #7a8fa3);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    position: relative;
+    z-index: 3;
+}
+
+.nozzle-tip {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    width: 10px;
+    height: 8px;
+    transform: translateX(-50%);
+    border-radius: 0 0 4px 4px;
+    background: #6a8098;
+}
+
+.stream {
+    width: 7px;
+    height: 0;
+    margin-top: 2px;
+    border-radius: 999px;
+    background: linear-gradient(
+        180deg,
+        rgba(190, 230, 255, 0.95) 0%,
+        rgba(100, 180, 255, 0.9) 55%,
+        rgba(70, 150, 230, 0.85) 100%
+    );
+    box-shadow: 0 0 10px rgba(100, 190, 255, 0.55);
+    opacity: 0;
+    transition: height 0.25s ease, opacity 0.25s ease;
+    z-index: 2;
+}
+
+.stream.active {
+    height: 36px;
+    opacity: 1;
+    animation: pourPulse 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes pourPulse {
+    from { opacity: 0.75; }
+    to { opacity: 1; }
 }
 
 .cup-wrap {
     position: relative;
-    width: 72px;
-    height: 92px;
-    margin: 0 auto;
-}
-
-.stream {
-    position: absolute;
-    top: -18px;
-    left: 50%;
-    width: 6px;
-    height: 0;
-    transform: translateX(-50%);
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgba(170, 220, 255, 0.95), rgba(90, 170, 255, 0.85));
-    opacity: 0;
-    transition: height 0.2s ease, opacity 0.2s ease;
-}
-
-.stream.active {
-    height: 22px;
-    opacity: 1;
+    margin-top: 4px;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
 }
 
 .cup {
-    position: absolute;
-    left: 50%;
-    bottom: 0;
-    width: 58px;
-    height: 72px;
-    transform: translateX(-50%);
-    border: 3px solid rgba(220, 235, 255, 0.9);
+    position: relative;
+    width: 72px;
+    height: 190px;
+    border: 3px solid rgba(230, 242, 255, 0.92);
     border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 16px 16px;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow:
+        inset 0 0 20px rgba(255, 255, 255, 0.04),
+        0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 .cup::before {
     content: "";
     position: absolute;
-    top: -8px;
-    left: -6px;
-    right: -6px;
-    height: 10px;
-    border: 3px solid rgba(220, 235, 255, 0.9);
+    top: -10px;
+    left: -8px;
+    right: -8px;
+    height: 12px;
+    border: 3px solid rgba(230, 242, 255, 0.92);
     border-bottom: none;
-    border-radius: 6px 6px 0 0;
+    border-radius: 8px 8px 0 0;
+    z-index: 4;
+}
+
+.cup-shine {
+    position: absolute;
+    top: 12%;
+    left: 10%;
+    width: 18%;
+    height: 70%;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0));
+    z-index: 3;
+    pointer-events: none;
 }
 
 .water {
@@ -113,32 +166,79 @@ body {
     right: 0;
     bottom: 0;
     height: 0%;
-    background: linear-gradient(180deg, #7ec8ff 0%, #3d9be8 55%, #2a7fc7 100%);
-    transition: height 0.15s linear;
+    background: linear-gradient(
+        180deg,
+        #8fd4ff 0%,
+        #4daef0 45%,
+        #2b84c9 100%
+    );
+    transition: height 0.12s linear;
+    z-index: 1;
+}
+
+.surface {
+    position: absolute;
+    top: -8px;
+    left: -15%;
+    width: 130%;
+    height: 14px;
 }
 
 .wave {
     position: absolute;
-    top: -6px;
-    left: -20%;
-    width: 140%;
-    height: 12px;
+    inset: 0;
     border-radius: 50%;
-    background: rgba(180, 225, 255, 0.55);
-    animation: wave 1.4s ease-in-out infinite;
+    background: rgba(190, 230, 255, 0.6);
+    animation: wave 1.2s ease-in-out infinite;
 }
 
 .wave-2 {
-    top: -4px;
-    opacity: 0.65;
-    animation-delay: 0.35s;
+    opacity: 0.55;
+    animation-delay: 0.4s;
 }
 
 @keyframes wave {
-    0%, 100% {
-        transform: translateX(0);
-    }
-    50% {
-        transform: translateX(8%);
-    }
+    0%, 100% { transform: translateX(-6%); }
+    50% { transform: translateX(6%); }
+}
+
+.progress-wrap {
+    width: 100%;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    border: 1px solid rgba(120, 190, 255, 0.2);
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #3d9be8, #7ec8ff);
+    box-shadow: 0 0 12px rgba(100, 190, 255, 0.6);
+    transition: width 0.12s linear;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.hint {
+    color: rgba(190, 220, 255, 0.75);
+    font-size: 11px;
+}
+
+.percent {
+    color: #d9ecff;
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }

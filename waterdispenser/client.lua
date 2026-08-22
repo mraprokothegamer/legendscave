@@ -124,12 +124,12 @@ local function playDrinkSequence()
     Wait(Config.FillDuration)
     hideFillNui()
 
-    Wait(200)
+    Wait(Config.SipDelay)
     PlaySoundFromEntity(-1, Config.SipSound.name, playerPed, Config.SipSound.bank, false, 0)
 
     local remark = lib.callback.await('waterdispenser:drinkWater', false)
 
-    local remaining = Config.AnimDuration - Config.FillDuration - 200
+    local remaining = Config.AnimDuration - Config.FillDuration - Config.SipDelay
     if remaining > 0 then
         Wait(remaining)
     end

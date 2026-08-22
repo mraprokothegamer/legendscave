@@ -1,6 +1,8 @@
 const fillUi = document.getElementById('fill-ui');
 const water = document.querySelector('.water');
 const stream = document.querySelector('.stream');
+const progressFill = document.querySelector('.progress-fill');
+const percentLabel = document.querySelector('.percent');
 let fillTimer = null;
 
 function resetFillUi() {
@@ -10,9 +12,18 @@ function resetFillUi() {
     }
 
     water.style.height = '0%';
+    progressFill.style.width = '0%';
+    percentLabel.textContent = '0%';
     stream.classList.remove('active');
     fillUi.classList.remove('visible');
     fillUi.classList.add('hidden');
+}
+
+function updateProgress(progress) {
+    const clamped = Math.min(Math.max(progress, 0), 100);
+    water.style.height = `${clamped}%`;
+    progressFill.style.width = `${clamped}%`;
+    percentLabel.textContent = `${Math.round(clamped)}%`;
 }
 
 function startFill(duration) {
@@ -24,7 +35,7 @@ function startFill(duration) {
         stream.classList.add('active');
     });
 
-    const totalMs = Math.max(duration || 1800, 500);
+    const totalMs = Math.max(duration || 7000, 5000);
     const stepMs = 50;
     const steps = Math.ceil(totalMs / stepMs);
     let currentStep = 0;
@@ -32,9 +43,10 @@ function startFill(duration) {
     fillTimer = setInterval(() => {
         currentStep += 1;
         const progress = Math.min((currentStep / steps) * 100, 100);
-        water.style.height = `${progress}%`;
+        updateProgress(progress);
 
         if (currentStep >= steps) {
+            updateProgress(100);
             clearInterval(fillTimer);
             fillTimer = null;
         }
