@@ -5,11 +5,11 @@ Config.Framework = 'auto'
 Config.Hud = '17mov_Hud'
 Config.HudResource = '17mov_Hud'
 
+-- Far right so NUI does not block the player
 Config.NuiPosition = 'bottom-right'
-Config.NuiPaddingRight = 4
+Config.NuiPaddingRight = 8
 Config.TargetDistance = 2.0
 
--- Paid drink
 Config.FreeWater = false
 Config.WaterPrice = 10
 Config.ThirstRefill = 30
@@ -25,7 +25,7 @@ Config.FillDuration = 7000
 Config.SipDelay = 400
 Config.AnimDuration = Config.FillDuration + 2500
 
--- RIGHT hand cup — do NOT use prop_cs_paper_cup (invalid on many builds)
+-- RIGHT hand — use plastic cup (paper cup crashes on many builds)
 Config.CupModel = `prop_plastic_cup_02`
 Config.CupModelFallback = `p_amb_coffeecup_01`
 Config.CupBone = 57005
@@ -36,7 +36,6 @@ Config.PourSound = {
     name = 'Pour',
     bank = 'DLC_HEIST_BIOLAB_PREP_HACKING_SOUNDS',
 }
-
 Config.SipSound = {
     name = 'Drink',
     bank = 'DLC_Dmod_Prop_Editor_Sounds',
@@ -50,11 +49,8 @@ Config.Remarks = {
     'Worth every dollar. Feeling refreshed.',
 }
 
--- Existing Rockstar cooler props already in the map
-Config.ScanKeywords = {
-    'watercooler',
-}
-
+-- Existing Rockstar coolers in the map (no spawning)
+Config.ScanKeywords = { 'watercooler' }
 Config.KnownModels = {
     `prop_watercooler`,
     `prop_watercooler_dark`,

@@ -4,20 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Water Dispenser</title>
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
-    <div id="nui-root" class="pos-bottom-right">
+    <div id="nui-root">
         <div id="fill-ui" class="hidden">
             <div class="panel">
                 <div class="title">Filling cup</div>
-
                 <div class="dispenser-stack">
-                    <div class="nozzle">
-                        <div class="nozzle-tip"></div>
-                    </div>
+                    <div class="nozzle"><div class="nozzle-tip"></div></div>
                     <div class="stream"></div>
-
                     <div class="cup-wrap">
                         <div class="cup">
                             <div class="water">
@@ -30,21 +26,17 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="progress-wrap">
-                    <div class="progress-track">
-                        <div class="progress-fill"></div>
-                    </div>
+                    <div class="progress-track"><div class="progress-fill"></div></div>
                     <div class="progress-label">
                         <span class="hint">Hold still...</span>
                         <span class="percent">0%</span>
                     </div>
                 </div>
-
-                <div class="version">UI v2.0.8 · Far right · Right hand</div>
+                <div class="version">UI v2.1.0 · Far right (not blocking)</div>
             </div>
         </div>
     </div>
-    <script src="app.js?v=8"></script>
+    <script src="app.js?v=9"></script>
 </body>
 </html>
