@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legendscave Jukebox</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="hidden" aria-hidden="true">
+    <div class="console">
+      <header class="brand-bar">
+        <p class="brand">LEGENDSCAVE</p>
+        <button type="button" class="close-btn" id="closeBtn" aria-label="Close">✕</button>
+      </header>
+
+      <section class="stage">
+        <h1 class="headline">Jukebox</h1>
+        <p class="sub">Local speaker · YouTube · nearby only</p>
+
+        <div class="eq" id="eq" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span>
+        </div>
+
+        <button type="button" class="play-ring" id="playBtn" aria-label="Play or stop">
+          <span class="play-ring__glow"></span>
+          <span class="play-ring__core" id="playIcon">▶</span>
+        </button>
+
+        <div class="now">
+          <p class="now__title" id="nowTitle">Select a track</p>
+          <p class="now__artist" id="nowArtist">—</p>
+        </div>
+
+        <div class="progress-wrap">
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="time-counter">
+            <span id="elapsed">0:00</span>
+            <span class="time-sep">/</span>
+            <span id="duration">0:00</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="controls">
+        <button type="button" class="ctrl" id="prevBtn" aria-label="Previous">⏮</button>
+        <button type="button" class="ctrl" id="stopBtn" aria-label="Stop">■</button>
+        <button type="button" class="ctrl" id="nextBtn" aria-label="Next">⏭</button>
+      </section>
+
+      <section class="custom">
+        <label class="custom__label" for="ytUrl">YouTube URL or ID</label>
+        <div class="custom__row">
+          <input id="ytUrl" type="text" placeholder="https://youtube.com/watch?v=…" autocomplete="off" />
+          <button type="button" id="playCustomBtn">Play</button>
+        </div>
+      </section>
+
+      <section class="playlist" id="playlist" aria-label="Playlist"></section>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
