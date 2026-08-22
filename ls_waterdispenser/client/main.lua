@@ -11,15 +11,13 @@ local function showFillNui(duration)
     SetNuiFocus(false, false)
     SendNUIMessage({
         action = 'startFill',
-        duration = duration or Config.FillDuration or 7000,
+        duration = duration or Config.FillDuration or 10000,
     })
 end
 
 local function hideFillNui()
-    -- Force-close fill UI (send twice for CEF reliability)
     SendNUIMessage({ action = 'hideFill' })
     SendNUIMessage({ action = 'forceHide' })
-    SendNUIMessage({ action = 'hideFill' })
 end
 
 local function playDrinkAnim(ped)
@@ -33,20 +31,21 @@ local function playDrinkAnim(ped)
         Wait(10)
     end
 
+    -- -1 duration = loop until we clear it
     TaskPlayAnim(ped, dict, name, 8.0, -8.0, -1, 49, 0.0, false, false, false)
     return true
 end
 
-local function getDrinkLabel()
-    return 'Drink Water'
-end
-
 local function hardCleanup(ped)
     hideFillNui()
+    Wait(0)
+    hideFillNui()
+
     if ped and DoesEntityExist(ped) then
         ClearPedSecondaryTask(ped)
         StopAnimTask(ped, Config.AnimDict or 'mp_player_intdrink', Config.AnimName or 'loop_bottle', 1.0)
     end
+
     Prop.cleanup()
     isDrinking = false
 end
@@ -72,20 +71,28 @@ local function playDrinkSequence()
 
     CreateThread(function()
         local remark = nil
-        local fillDuration = Config.FillDuration or 7000
+        local fillDuration = Config.FillDuration or 10000
 
         local ok, err = pcall(function()
+            -- 1) Start drinking animation
             playDrinkAnim(playerPed)
-            Wait(150)
+            Wait(200)
 
-            -- Attach cup FIRST so it is visible during fill
+            -- 2) Put red cup in LEFT hand
             local cup = Prop.attachCup()
             if not cup then
-                debugPrint('Cup attach failed — retrying once')
                 Wait(100)
                 cup = Prop.attachCup()
             end
 
+            if cup then
+                debugPrint('Cup is in left hand')
+            else
+                debugPrint('WARNING: cup did not attach')
+                lib.notify({ type = 'error', description = 'Cup prop failed to load.' })
+            end
+
+            -- 3) Show fill NUI (~10 seconds)
             showFillNui(fillDuration)
 
             if cup and DoesEntityExist(cup) then
@@ -94,15 +101,15 @@ local function playDrinkSequence()
                 PlaySoundFromEntity(-1, Config.PourSound.name, playerPed, Config.PourSound.bank, false, 0)
             end
 
+            -- 4) Wait fill duration, keep anim + cup alive
             local fillStarted = GetGameTimer()
             while GetGameTimer() - fillStarted < fillDuration do
                 if IsEntityDead(playerPed) then
                     error('player_dead')
                 end
 
-                -- Keep cup attached if something detached it
-                local currentCup = Prop.getEntity()
-                if not currentCup or not DoesEntityExist(currentCup) or not IsEntityAttachedToEntity(currentCup, playerPed) then
+                local current = Prop.getEntity()
+                if not current or not DoesEntityExist(current) then
                     Prop.attachCup()
                 end
 
@@ -116,18 +123,17 @@ local function playDrinkSequence()
                 Wait(0)
             end
 
-            -- Close NUI immediately when fill completes
+            -- 5) Hide NUI as soon as fill/drink time is done
             hideFillNui()
             Wait(50)
             hideFillNui()
 
-            Wait(Config.SipDelay or 400)
+            Wait(Config.SipDelay or 500)
             PlaySoundFromEntity(-1, Config.SipSound.name, playerPed, Config.SipSound.bank, false, 0)
 
             remark = lib.callback.await('waterdispenser:drinkWater', false)
 
-            local remaining = (Config.AnimDuration or (fillDuration + 2500)) - fillDuration - (Config.SipDelay or 400)
-            if remaining > 0 then Wait(remaining) end
+            Wait(800)
         end)
 
         if not ok then
@@ -137,11 +143,16 @@ local function playDrinkSequence()
             end)
         end
 
-        -- ALWAYS run — NUI must never stay on screen
+        -- 6) ALWAYS cleanup — NUI must disappear, cup removed, anim stopped
         hardCleanup(playerPed)
 
         if ok and remark then
             lib.notify({ type = 'inform', description = remark, duration = 5000 })
+        elseif ok then
+            lib.notify({
+                type = 'success',
+                description = ('You feel refreshed (+ %s%% thirst).'):format(Config.ThirstRefill or 30),
+            })
         end
     end)
 end
@@ -153,7 +164,7 @@ local function registerDispenser(model)
     exports.ox_target:addModel(model, {
         {
             name = 'waterdispenser_drink_water',
-            label = getDrinkLabel(),
+            label = 'Drink Water',
             icon = 'fa-solid fa-glass-water',
             distance = Config.TargetDistance or 2.0,
             onSelect = function()
@@ -221,18 +232,26 @@ CreateThread(function()
     end
 end)
 
-if Config.Debug then
-    RegisterCommand('testwater', function()
-        playDrinkSequence()
-    end, false)
+RegisterCommand('testcup', function()
+    Config.Debug = true
+    local cup = Prop.attachCup()
+    print('[ls_waterdispenser] testcup:', cup)
+    lib.notify({
+        type = cup and 'success' or 'error',
+        description = cup and 'Cup attached to LEFT hand for 8s' or 'Cup failed — check F8',
+    })
+    if cup then
+        CreateThread(function()
+            Wait(8000)
+            Prop.cleanup()
+        end)
+    end
+end, false)
 
-    RegisterCommand('testcup', function()
-        local cup = Prop.attachCup()
-        print('[ls_waterdispenser] testcup result:', cup)
-        Wait(5000)
-        Prop.cleanup()
-    end, false)
-end
+RegisterCommand('testwater', function()
+    Config.Debug = true
+    playDrinkSequence()
+end, false)
 
 AddEventHandler('onResourceStop', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then return end

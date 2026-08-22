@@ -4,8 +4,16 @@ const water = document.querySelector('.water');
 const stream = document.querySelector('.stream');
 const progressFill = document.querySelector('.progress-fill');
 const percentLabel = document.querySelector('.percent');
+
 let fillTimer = null;
-let autoHideTimer = null;
+let failsafeTimer = null;
+let completeTimer = null;
+
+function clearTimers() {
+    if (fillTimer) { clearInterval(fillTimer); fillTimer = null; }
+    if (failsafeTimer) { clearTimeout(failsafeTimer); failsafeTimer = null; }
+    if (completeTimer) { clearTimeout(completeTimer); completeTimer = null; }
+}
 
 function applyNearPlayerLayout() {
     if (!nuiRoot) return;
@@ -18,15 +26,11 @@ function setOpen(open) {
     if (!fillUi) return;
     if (open) {
         fillUi.classList.remove('hidden');
-        fillUi.style.display = 'block';
-        fillUi.style.visibility = 'visible';
-        fillUi.style.opacity = '1';
+        fillUi.style.cssText = 'display:block;visibility:visible;opacity:1;';
         if (stream) stream.classList.add('active');
     } else {
         fillUi.classList.add('hidden');
-        fillUi.style.display = 'none';
-        fillUi.style.visibility = 'hidden';
-        fillUi.style.opacity = '0';
+        fillUi.style.cssText = 'display:none !important;visibility:hidden;opacity:0;';
         if (stream) stream.classList.remove('active');
     }
 }
@@ -39,14 +43,7 @@ function updateProgress(p) {
 }
 
 function hideFill() {
-    if (fillTimer) {
-        clearInterval(fillTimer);
-        fillTimer = null;
-    }
-    if (autoHideTimer) {
-        clearTimeout(autoHideTimer);
-        autoHideTimer = null;
-    }
+    clearTimers();
     updateProgress(0);
     setOpen(false);
 }
@@ -56,7 +53,7 @@ function startFill(duration) {
     applyNearPlayerLayout();
     setOpen(true);
 
-    const totalMs = Math.max(Number(duration) || 7000, 5000);
+    const totalMs = Math.max(Number(duration) || 10000, 5000);
     const stepMs = 50;
     const steps = Math.ceil(totalMs / stepMs);
     let step = 0;
@@ -64,21 +61,23 @@ function startFill(duration) {
     fillTimer = setInterval(() => {
         step += 1;
         updateProgress((step / steps) * 100);
+
         if (step >= steps) {
             updateProgress(100);
             clearInterval(fillTimer);
             fillTimer = null;
-            // Auto-hide shortly after reaching 100% even if Lua message is missed
-            autoHideTimer = setTimeout(() => {
+
+            // Hide NUI right after fill reaches 100%
+            completeTimer = setTimeout(() => {
                 hideFill();
-            }, 600);
+            }, 400);
         }
     }, stepMs);
 
-    // Absolute failsafe — never leave NUI on screen
-    autoHideTimer = setTimeout(() => {
+    // Hard failsafe — always hide
+    failsafeTimer = setTimeout(() => {
         hideFill();
-    }, totalMs + 1000);
+    }, totalMs + 1500);
 }
 
 applyNearPlayerLayout();

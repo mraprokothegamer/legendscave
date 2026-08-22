@@ -1,15 +1,14 @@
 Config = {}
 
-Config.Debug = false
+Config.Debug = true
 Config.Framework = 'auto'
 Config.Hud = '17mov_Hud'
 Config.HudResource = '17mov_Hud'
 
--- NUI near player (slightly right of center) — not covering animation, not far edge
 Config.NuiPosition = 'near-player'
 Config.TargetDistance = 2.0
 
--- FREE water for everyone
+-- FREE water
 Config.FreeWater = true
 Config.WaterPrice = 0
 Config.ThirstRefill = 30
@@ -21,15 +20,18 @@ Config.CooldownWindow = 60 * 60
 
 Config.AnimDict = 'mp_player_intdrink'
 Config.AnimName = 'loop_bottle'
-Config.FillDuration = 7000
-Config.SipDelay = 400
-Config.AnimDuration = Config.FillDuration + 2500
 
--- LEFT hand cup (60309 = PH_L_Hand — best bone for handheld props)
+-- ~10 seconds to fill + drink
+Config.FillDuration = 10000
+Config.SipDelay = 500
+Config.AnimDuration = 12000
+
+-- LEFT hand red plastic cup
+-- 60309 = PH_L_Hand (prop hand bone)
 Config.CupModel = `prop_plastic_cup_02`
-Config.CupModelFallback = `apa_prop_cs_plastic_cup_01`
+Config.CupModelFallback = `ng_proc_sodacup_01a`
 Config.CupBone = 60309
-Config.CupOffset = { x = 0.13, y = 0.04, z = -0.04 }
+Config.CupOffset = { x = 0.15, y = 0.02, z = -0.03 }
 Config.CupRotation = { x = -80.0, y = 0.0, z = -20.0 }
 
 Config.PourSound = {
@@ -49,7 +51,6 @@ Config.Remarks = {
     'Feeling refreshed.',
 }
 
--- Existing Rockstar coolers in the map (no spawning)
 Config.ScanKeywords = { 'watercooler' }
 Config.KnownModels = {
     `prop_watercooler`,
