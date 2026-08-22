@@ -2,9 +2,9 @@ fx_version 'cerulean'
 game 'gta5'
 
 name 'waterdispenser'
-description 'Auto-detecting water dispensers with ox_target, ESX thirst, and immersive drink animations'
+description 'Auto-detecting water dispensers with ox_target, Qbox/ESX thirst, and immersive drink animations'
 author 'legendscave'
-version '1.1.0'
+version '1.3.0'
 
 lua54 'yes'
 
@@ -26,13 +26,16 @@ client_scripts {
 }
 
 server_scripts {
-    '@es_extended/imports.lua',
+    'server/framework.lua',
     'server.lua',
 }
 
 dependencies {
     'ox_lib',
     'ox_target',
-    'es_extended',
-    'esx_status',
 }
+
+-- Requires ONE framework (auto-detected by default):
+--   qbx_core  (Qbox)
+--   qb-core   (legacy QBCore)
+--   es_extended + esx_status  (ESX)

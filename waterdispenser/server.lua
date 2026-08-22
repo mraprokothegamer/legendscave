@@ -1,8 +1,8 @@
-local drinkHistory = {}
-
-local function getPlayerKey(xPlayer)
-    return xPlayer.identifier
+if not Framework.init() then
+    return
 end
+
+local drinkHistory = {}
 
 local function pruneOldDrinks(timestamps, now)
     local pruned = {}
@@ -46,26 +46,34 @@ local function getDrinkStatus(playerKey)
 end
 
 lib.callback.register('waterdispenser:canDrink', function(source)
-    local xPlayer = ESX.GetPlayerFromId(source)
+    if not Framework.isReady() then
+        return false, 'Dispenser system is unavailable.'
+    end
 
-    if not xPlayer then
+    local player = Framework.getPlayer(source)
+
+    if not player then
         return false, 'Unable to use the dispenser right now.'
     end
 
-    local playerKey = getPlayerKey(xPlayer)
+    local playerKey = Framework.getPlayerKey(player)
     local allowed, message = getDrinkStatus(playerKey)
 
     return allowed, message
 end)
 
 lib.callback.register('waterdispenser:drinkWater', function(source)
-    local xPlayer = ESX.GetPlayerFromId(source)
-
-    if not xPlayer then
+    if not Framework.isReady() then
         return nil
     end
 
-    local playerKey = getPlayerKey(xPlayer)
+    local player = Framework.getPlayer(source)
+
+    if not player then
+        return nil
+    end
+
+    local playerKey = Framework.getPlayerKey(player)
     local allowed, message, timestamps = getDrinkStatus(playerKey)
 
     if not allowed then
@@ -79,8 +87,7 @@ lib.callback.register('waterdispenser:drinkWater', function(source)
     timestamps[#timestamps + 1] = os.time()
     drinkHistory[playerKey] = timestamps
 
-    local thirstAmount = math.floor((Config.ThirstRefill / 100) * Config.ThirstMax)
-    TriggerClientEvent('esx_status:add', source, 'thirst', thirstAmount)
+    Framework.addThirst(source, player, Config.ThirstRefill)
 
     local remark = Config.Remarks[math.random(#Config.Remarks)]
 
@@ -93,9 +100,9 @@ lib.callback.register('waterdispenser:drinkWater', function(source)
 end)
 
 AddEventHandler('playerDropped', function()
-    local xPlayer = ESX.GetPlayerFromId(source)
+    local player = Framework.getPlayer(source)
 
-    if xPlayer then
-        drinkHistory[getPlayerKey(xPlayer)] = nil
+    if player then
+        drinkHistory[Framework.getPlayerKey(player)] = nil
     end
 end)

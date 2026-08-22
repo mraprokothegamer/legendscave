@@ -1,12 +1,16 @@
 Config = {}
 
+-- Framework: 'auto', 'qbox', or 'esx'
+-- auto detects qbx_core/qb-core first, then es_extended
+Config.Framework = 'auto'
+
 -- Emergency city water: free for everyone
 Config.FreeWater = true
 
 -- Thirst refill percentage (0-100)
 Config.ThirstRefill = 10
 
--- esx_status uses 0-1000000; this is the max thirst value
+-- esx_status uses 0-1000000; this is the max thirst value (ESX only)
 Config.ThirstMax = 1000000
 
 -- Max drinks allowed per player within the cooldown window

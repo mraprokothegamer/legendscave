@@ -7,30 +7,48 @@ FiveM resources for the Legends Cave server.
 Auto-detecting emergency water dispenser resource with:
 
 - **ox_target** interaction on dispenser props
-- **NUI** cup-fill animation while water pours
-- **ESX** free thirst relief via **esx_status** (+10% by default)
+- **ox_lib** callbacks and notifications
+- **Qbox** (qbx_core) or **ESX** thirst support — auto-detected
+- **NUI** vertical cup-fill animation with progress bar
 - Random player remarks after drinking
 - Hourly cooldown (2 cups per hour per player)
 - Cup prop in hand, pour + sip sounds, and drinking animation
-- **config.lua** for refill %, sounds, animations, remarks, and scan keywords
+- **config.lua** for framework, refill %, sounds, animations, remarks, and scan keywords
 
-### Dependencies
+### Dependencies (required)
 
 - [ox_lib](https://github.com/overextended/ox_lib)
 - [ox_target](https://github.com/overextended/ox_target)
+
+### Framework (one required)
+
+**Qbox (recommended for your setup):**
+- [qbx_core](https://github.com/Qbox-project/qbx_core)
+- HUD that listens to `hud:client:UpdateNeeds` (e.g. qbx_hud / qb-hud)
+
+**ESX (alternative):**
 - [es_extended](https://github.com/esx-framework/esx_core)
 - [esx_status](https://github.com/esx-framework/esx_status)
+
+The script auto-detects `qbx_core` → `qb-core` → `es_extended`. Override with `Config.Framework = 'qbox'` or `'esx'` in `config.lua`.
 
 ### Install
 
 1. Copy `waterdispenser` into your server's `resources` folder.
-2. Add `ensure waterdispenser` to `server.cfg` (after dependencies).
-3. Edit `waterdispenser/config.lua` to tweak price, thirst refill, sounds, or scan keywords.
+2. Ensure dependencies start first in `server.cfg`:
+   ```
+   ensure ox_lib
+   ensure ox_target
+   ensure qbx_core
+   ensure waterdispenser
+   ```
+3. Edit `waterdispenser/config.lua` as needed.
 
 ### Configuration
 
 | Option | Default | Description |
 |--------|---------|-------------|
+| `Config.Framework` | `auto` | `auto`, `qbox`, or `esx` |
 | `Config.ThirstRefill` | `10` | Emergency thirst restored (percent) |
 | `Config.MaxDrinksPerHour` | `2` | Max drinks per player per hour |
 | `Config.CooldownWindow` | `3600` | Cooldown window in seconds |
