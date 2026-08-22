@@ -1,9 +1,9 @@
 --[[
     ls_waterdispenser cup prop module
-    VERSION: 2.3.4 — REQUIRED. main.lua calls Prop.attachCup / Prop.cleanup.
+    VERSION: 2.3.5 — optional; main.lua embeds the same Prop API if this file is missing
 ]]
 
-print('^2[ls_waterdispenser] client/prop.lua v2.3.4 loaded (Prop module OK)^0')
+print('^2[ls_waterdispenser] client/prop.lua v2.3.5 loaded (Prop module OK)^0')
 
 Prop = {}
 
