@@ -1,7 +1,4 @@
-# CRITICAL — Install v2.3.2 (restored working NUI + cup prop)
-
-This is the last known-good build: fill NUI near the player + plastic cup on the left hand during drink.
-No separate `Prop` module — cup attach lives in `client/main.lua`.
+# CRITICAL — How to install v2.3.2 (fixes Prop nil)
 
 Your console error:
 ```

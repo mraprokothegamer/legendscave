@@ -19,9 +19,9 @@ local CUP_MODELS = {
     `p_amb_coffeecup_01`,
 }
 
-local RIGHT_BONES = {
-    28422, -- PH_R_Hand (best for props)
-    57005, -- SKEL_R_Hand
+local LEFT_BONES = {
+    60309, -- PH_L_Hand
+    18905, -- SKEL_L_Hand
 }
 
 local function debugPrint(message)
