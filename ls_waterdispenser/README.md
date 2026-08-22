@@ -46,7 +46,7 @@ All settings live in `config.lua`:
 | `Config.ThirstRestore` | `45` | Thirst added per use (capped at 100). |
 | `Config.DrinkDuration` | `10000` | Drink length in ms — animation + NUI cup fill run together for this long. |
 | `Config.Anim` | `mp_player_intdrink / loop_bottle` | Ped drinking animation. |
-| `Config.Cup` | `ng_proc_watercup_01`, bone `18905` | Held cup prop + left‑hand bone/offset. Set `model = false` to disable. |
+| `Config.Cup` | `prop_cs_paper_cup` (+ `prop_plastic_cup_02` fallback), bone `18905` | Held cup prop + left‑hand bone/offset. Set `model = false` to disable. Must be a real GTA prop (`ng_proc_watercup_01` is invalid). |
 | `Config.Sound` | `pour.wav`, vol `0.5` | Pour sound played through the NUI. |
 | `Config.Props` | coolers + vendor | Prop models the interaction attaches to. Add your own. |
 

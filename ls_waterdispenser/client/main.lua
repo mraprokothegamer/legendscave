@@ -1,10 +1,29 @@
 local isDrinking = false
 local cupObject = nil
 
+local function resolveCupModel()
+    local candidates = { Config.Cup.model, Config.Cup.fallback }
+    for i = 1, #candidates do
+        local name = candidates[i]
+        if name and name ~= false then
+            local hash = type(name) == 'number' and name or joaat(name)
+            if IsModelInCdimage(hash) and IsModelValid(hash) then
+                return hash
+            end
+        end
+    end
+    return nil
+end
+
 local function attachCup()
     if not Config.Cup.model then return end
 
-    local model = GetHashKey(Config.Cup.model)
+    local model = resolveCupModel()
+    if not model then
+        print('^1[ls_waterdispenser]^7 No valid cup model (tried Config.Cup.model / fallback). Skipping held prop.')
+        return
+    end
+
     lib.requestModel(model)
 
     local coords = GetEntityCoords(cache.ped)

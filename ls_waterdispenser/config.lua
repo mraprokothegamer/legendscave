@@ -30,11 +30,17 @@ Config.Anim = {
 -- Cup prop held in the player's LEFT hand while drinking.
 -- `bone` 18905 is SKEL_L_Hand (left hand). Tune offset/rotation on your server
 -- since exact fit varies by prop; set `model = false` to disable the held prop.
+--
+-- IMPORTANT: use a real GTA prop. `ng_proc_watercup_01` is NOT a valid model
+-- (hash -487885758) and will crash ox_lib requestModel.
+-- Good options: prop_cs_paper_cup, prop_plastic_cup_02, p_amb_coffeecup_01,
+-- ng_proc_sodacup_01a, apa_prop_cs_plastic_cup_01
 Config.Cup = {
-    model = 'ng_proc_watercup_01',
+    model = 'prop_cs_paper_cup',
+    fallback = 'prop_plastic_cup_02',
     bone = 18905,
-    offset = { x = 0.01, y = 0.02, z = -0.03 },
-    rotation = { x = 0.0, y = 0.0, z = 0.0 },
+    offset = { x = 0.12, y = 0.028, z = 0.001 },
+    rotation = { x = 10.0, y = 175.0, z = 0.0 },
 }
 
 -- Pour/gulp sound. Played through the NUI (HTML5 audio) so it needs no extra deps.
