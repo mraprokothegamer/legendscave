@@ -4,12 +4,15 @@ FiveM resources for the Legends Cave server.
 
 ## waterdispenser
 
-Auto-detecting water dispenser resource with:
+Auto-detecting emergency water dispenser resource with:
 
 - **ox_target** interaction on dispenser props
-- **ESX** payment and **esx_status** thirst refill
+- **NUI** cup-fill animation while water pours
+- **ESX** free thirst relief via **esx_status** (+10% by default)
+- Random player remarks after drinking
+- Hourly cooldown (2 cups per hour per player)
 - Cup prop in hand, pour + sip sounds, and drinking animation
-- **config.lua** for price, refill %, sounds, animations, and scan keywords
+- **config.lua** for refill %, sounds, animations, remarks, and scan keywords
 
 ### Dependencies
 
@@ -28,8 +31,11 @@ Auto-detecting water dispenser resource with:
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `Config.WaterPrice` | `10` | Cost per drink |
-| `Config.ThirstRefill` | `30` | Thirst restored (percent) |
+| `Config.ThirstRefill` | `10` | Emergency thirst restored (percent) |
+| `Config.MaxDrinksPerHour` | `2` | Max drinks per player per hour |
+| `Config.CooldownWindow` | `3600` | Cooldown window in seconds |
+| `Config.FillDuration` | `1800` | NUI cup-fill animation length (ms) |
+| `Config.Remarks` | 5 lines | Random post-drink player remarks |
 | `Config.ScanKeywords` | watercooler, dispenser, hydrant | Archetype name keywords for auto-scan |
 | `Config.KnownModels` | prop_watercooler variants | Models registered without scanning |
 

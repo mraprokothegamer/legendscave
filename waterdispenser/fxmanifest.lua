@@ -4,9 +4,17 @@ game 'gta5'
 name 'waterdispenser'
 description 'Auto-detecting water dispensers with ox_target, ESX thirst, and immersive drink animations'
 author 'legendscave'
-version '1.0.0'
+version '1.1.0'
 
 lua54 'yes'
+
+ui_page 'html/index.html'
+
+files {
+    'html/index.html',
+    'html/style.css',
+    'html/app.js',
+}
 
 shared_scripts {
     '@ox_lib/init.lua',

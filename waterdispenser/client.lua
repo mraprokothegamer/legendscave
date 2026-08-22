@@ -1,4 +1,18 @@
 local registeredModels = {}
+local isDrinking = false
+
+local function showFillNui(duration)
+    SendNUIMessage({
+        action = 'startFill',
+        duration = duration,
+    })
+end
+
+local function hideFillNui()
+    SendNUIMessage({
+        action = 'hideFill',
+    })
+end
 
 local function loadModel(model)
     if not IsModelValid(model) then
@@ -33,6 +47,23 @@ local function loadAnimDict(dict)
 end
 
 local function playDrinkSequence()
+    if isDrinking then
+        return
+    end
+
+    isDrinking = true
+
+    local allowed, message = lib.callback.await('waterdispenser:canDrink', false)
+
+    if not allowed then
+        lib.notify({
+            type = 'error',
+            description = message or 'You need to wait before drinking again.',
+        })
+        isDrinking = false
+        return
+    end
+
     local playerPed = PlayerPedId()
 
     if not loadModel(Config.CupModel) then
@@ -40,6 +71,7 @@ local function playDrinkSequence()
             type = 'error',
             description = 'Unable to load cup prop.',
         })
+        isDrinking = false
         return
     end
 
@@ -48,6 +80,7 @@ local function playDrinkSequence()
 
     if not DoesEntityExist(cup) then
         SetModelAsNoLongerNeeded(Config.CupModel)
+        isDrinking = false
         return
     end
 
@@ -69,6 +102,7 @@ local function playDrinkSequence()
         true
     )
 
+    showFillNui(Config.FillDuration)
     PlaySoundFromEntity(-1, Config.PourSound.name, cup, Config.PourSound.bank, false, 0)
 
     if loadAnimDict(Config.AnimDict) then
@@ -87,12 +121,19 @@ local function playDrinkSequence()
         )
     end
 
-    Wait(400)
+    Wait(Config.FillDuration)
+    hideFillNui()
+
+    Wait(200)
     PlaySoundFromEntity(-1, Config.SipSound.name, playerPed, Config.SipSound.bank, false, 0)
 
-    TriggerServerEvent('waterdispenser:buyWater')
+    local remark = lib.callback.await('waterdispenser:drinkWater', false)
 
-    Wait(Config.AnimDuration)
+    local remaining = Config.AnimDuration - Config.FillDuration - 200
+    if remaining > 0 then
+        Wait(remaining)
+    end
+
     ClearPedSecondaryTask(playerPed)
 
     if DoesEntityExist(cup) then
@@ -100,6 +141,16 @@ local function playDrinkSequence()
     end
 
     SetModelAsNoLongerNeeded(Config.CupModel)
+
+    if remark then
+        lib.notify({
+            type = 'inform',
+            description = remark,
+            duration = 5000,
+        })
+    end
+
+    isDrinking = false
 end
 
 local function registerDispenser(model)
@@ -112,7 +163,7 @@ local function registerDispenser(model)
     exports.ox_target:addModel(model, {
         {
             name = 'drink_water',
-            label = ('Drink Water ($%s)'):format(Config.WaterPrice),
+            label = 'Drink Water',
             icon = 'fa-solid fa-glass-water',
             distance = 2.0,
             onSelect = function()

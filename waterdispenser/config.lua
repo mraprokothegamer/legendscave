@@ -1,13 +1,19 @@
 Config = {}
 
--- Price of water
-Config.WaterPrice = 10
+-- Emergency city water: free for everyone
+Config.FreeWater = true
 
 -- Thirst refill percentage (0-100)
-Config.ThirstRefill = 30
+Config.ThirstRefill = 10
 
 -- esx_status uses 0-1000000; this is the max thirst value
 Config.ThirstMax = 1000000
+
+-- Max drinks allowed per player within the cooldown window
+Config.MaxDrinksPerHour = 2
+
+-- Cooldown window in seconds (1 hour)
+Config.CooldownWindow = 60 * 60
 
 -- Animation dictionary + animation name
 Config.AnimDict = 'mp_player_intdrink'
@@ -15,6 +21,9 @@ Config.AnimName = 'loop_bottle'
 
 -- How long the drink animation runs (ms)
 Config.AnimDuration = 2500
+
+-- How long the NUI cup-fill animation runs (ms)
+Config.FillDuration = 1800
 
 -- Cup prop model and hand attachment offsets
 Config.CupModel = `prop_cs_paper_cup`
@@ -31,6 +40,15 @@ Config.PourSound = {
 Config.SipSound = {
     name = 'Drink',
     bank = 'DLC_Dmod_Prop_Editor_Sounds',
+}
+
+-- Random player remarks after drinking
+Config.Remarks = {
+    'Ah, that hits the spot. I really needed that.',
+    'Cold water on a hot day — nothing better.',
+    'My throat was so dry... feeling human again.',
+    'Public water never tasted so good.',
+    'Emergency hydration complete. I\'m good for now.',
 }
 
 -- Keywords used when scanning loaded world objects by archetype name
