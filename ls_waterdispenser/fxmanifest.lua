@@ -3,7 +3,7 @@ game 'gta5'
 
 name 'ls_waterdispenser'
 author 'legendscave'
-description 'Water dispensers with ox_target, Qbox, cup prop, NUI fill, and paid thirst refill'
+description 'Rockstar water coolers via ox_target — paid drink, cup prop, NUI, Qbox/ESX'
 version '2.0.7'
 
 lua54 'yes'

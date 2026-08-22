@@ -1,31 +1,33 @@
-# ls_waterdispenser
+# ls_waterdispenser v2.0.7
 
-## Correct folder structure (required)
+Uses **existing Rockstar water cooler props** already in the map (`prop_watercooler`, etc.).
+Does **not** spawn coolers — only a temporary cup in the player's right hand while drinking.
+
+## Features
+- ox_target (third eye) on Rockstar water coolers
+- Price: $10 (config)
+- Thirst: +30% (config)
+- Cup in **right hand** (bone 57005) with safe model fallbacks
+- Far-right NUI fill animation + progress bar
+- Pour + sip sounds (GTA natives — no .wav files)
+- Qbox / qb-core / ESX + 17mov_Hud
+
+## Folder structure (required)
 
 ```
-resources/[standalone]/ls_waterdispenser/
+ls_waterdispenser/
 ├── fxmanifest.lua
 ├── config.lua
-├── client/
-│   ├── hud.lua
-│   ├── prop.lua
-│   └── main.lua
-├── server/
-│   ├── framework.lua
-│   └── main.lua
-├── shared/
-│   └── validate.lua
-└── html/
-    ├── index.html
-    ├── style.css
-    └── app.js
+├── client/hud.lua, prop.lua, main.lua
+├── server/framework.lua, main.lua
+├── shared/validate.lua
+└── html/index.html, style.css, app.js
 ```
 
 ## Install
-
-1. Delete any old/broken `ls_waterdispenser` folder on your server
-2. Copy this **entire** folder into `resources/[standalone]/`
-3. In server.cfg:
+1. Delete any old `ls_waterdispenser` folder
+2. Place this folder in `resources/[standalone]/ls_waterdispenser`
+3. server.cfg:
    ```
    ensure ox_lib
    ensure ox_target
@@ -33,17 +35,12 @@ resources/[standalone]/ls_waterdispenser/
    ensure 17mov_Hud
    ensure ls_waterdispenser
    ```
-4. Restart server (or `refresh` then `ensure ls_waterdispenser`)
+4. Restart server
 
-## Important
-
-- Do **not** nest folders like `ls_waterdispenser/waterdispenser/...`
-- `fxmanifest.lua` must sit next to `client/`, `server/`, `html/`, and `config.lua`
-- No `html/sounds/pour.wav` is required — sounds use GTA natives
-
-## Config defaults
-
-- Price: $10
-- Thirst: +30%
-- Cup: right hand (bone 57005)
-- NUI: far right fill panel
+## Config highlights
+```lua
+Config.WaterPrice = 10
+Config.ThirstRefill = 30
+Config.CupModel = `prop_plastic_cup_02`  -- right hand
+Config.KnownModels = { `prop_watercooler`, `prop_watercooler_dark` }
+```
