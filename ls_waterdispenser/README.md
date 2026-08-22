@@ -9,8 +9,10 @@ drinking animation, sound, and a custom "water pouring into a cup" NUI.
 - `ox_target` interaction on every configured water cooler / dispenser prop.
 - Restores **+45 thirst** (additive, capped at 100).
 - **3 uses per player per hour**, rolling 60‑minute window, enforced **server‑side**.
-- **10s** drink with a cup prop held in the **left hand**, drinking animation, and pour sound.
-- Custom NUI: a cup fills with water behind a progress bar (shown middle‑right).
+- Two‑phase interaction with the cup held in the **left hand** throughout:
+  1. **Fill** (`Config.FillDuration`, default 5s): middle‑right NUI shows the cup filling with a progress bar + pour sound.
+  2. **Drink** (`Config.DrinkDuration`, default 10s): NUI hides and the drinking animation plays.
+- The NUI sits middle‑right so it doesn't block the prop or the player.
 
 ## Dependencies
 
@@ -41,7 +43,8 @@ All settings live in `config.lua`:
 | `Config.UsesPerHour` | `3` | Uses allowed per player within the window. |
 | `Config.WindowMinutes` | `60` | Rolling window length in minutes. |
 | `Config.ThirstRestore` | `45` | Thirst added per use (capped at 100). |
-| `Config.DrinkDuration` | `10000` | Drink length in ms (drives anim, cup fill, progress bar). |
+| `Config.FillDuration` | `5000` | Cup‑fill phase in ms (NUI + progress bar), shown before drinking. |
+| `Config.DrinkDuration` | `10000` | Drinking animation length in ms, after the cup fills. |
 | `Config.Anim` | `mp_player_intdrink / loop_bottle` | Ped drinking animation. |
 | `Config.Cup` | `ng_proc_watercup_01`, bone `18905` | Held cup prop + left‑hand bone/offset. Set `model = false` to disable. |
 | `Config.Sound` | `pour.wav`, vol `0.5` | Pour sound played through the NUI. |

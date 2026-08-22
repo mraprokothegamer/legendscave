@@ -7,7 +7,7 @@ const sound = document.getElementById("pour-sound");
 // Target fill level of the cup (leaves a little headroom at the top).
 const WATER_TARGET = "85%";
 
-function startDrink(durationMs, soundFile, volume) {
+function startFill(durationMs, soundFile, volume) {
     const seconds = (durationMs || 5000) / 1000;
 
     app.classList.remove("hidden");
@@ -35,7 +35,7 @@ function startDrink(durationMs, soundFile, volume) {
     }
 }
 
-function stopDrink() {
+function stopFill() {
     cup.classList.remove("pouring");
     app.classList.add("hidden");
     if (!sound.paused) {
@@ -45,10 +45,10 @@ function stopDrink() {
 
 window.addEventListener("message", (event) => {
     const data = event.data || {};
-    if (data.action === "startDrink") {
-        startDrink(data.duration, data.sound, data.volume);
-    } else if (data.action === "stopDrink") {
-        stopDrink();
+    if (data.action === "startFill") {
+        startFill(data.duration, data.sound, data.volume);
+    } else if (data.action === "stopFill") {
+        stopFill();
     }
 });
 
@@ -56,11 +56,14 @@ window.addEventListener("message", (event) => {
 // without a running FiveM server. This never triggers inside the game client
 // (CEF loads the page without query params).
 if (new URLSearchParams(window.location.search).get("demo") === "1") {
+    // Demo-only backdrop so the transparent in-game overlay is visible here.
+    document.body.style.background =
+        "radial-gradient(circle at 30% 30%, #2a3b4d, #0d141c)";
     const duration = 5000;
     const loop = () => {
-        startDrink(duration, null, 0.5);
+        startFill(duration, null, 0.5);
         setTimeout(() => {
-            stopDrink();
+            stopFill();
             setTimeout(loop, 900);
         }, duration);
     };

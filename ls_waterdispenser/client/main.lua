@@ -52,21 +52,27 @@ local function drink()
         return
     end
 
+    -- Hold the cup in the left hand for the whole interaction.
     attachCup()
-    playAnim()
 
+    -- Phase 1: fill the cup. Middle-right NUI + progress bar, no drink anim yet.
     SendNUIMessage({
-        action = 'startDrink',
-        duration = Config.DrinkDuration,
+        action = 'startFill',
+        duration = Config.FillDuration,
         sound = Config.Sound.enabled and Config.Sound.file or nil,
         volume = Config.Sound.volume,
     })
 
-    Wait(Config.DrinkDuration)
+    Wait(Config.FillDuration)
 
+    SendNUIMessage({ action = 'stopFill' })
+
+    -- Phase 2: drink. NUI is hidden; play the drinking animation with the cup.
+    playAnim()
+    Wait(Config.DrinkDuration)
     stopAnim()
+
     removeCup()
-    SendNUIMessage({ action = 'stopDrink' })
 
     lib.notify({ type = 'success', description = message })
     isDrinking = false
@@ -95,6 +101,6 @@ AddEventHandler('onResourceStop', function(resource)
     if isDrinking then
         stopAnim()
         removeCup()
-        SendNUIMessage({ action = 'stopDrink' })
+        SendNUIMessage({ action = 'stopFill' })
     end
 end)
