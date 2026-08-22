@@ -28,8 +28,14 @@ local function update17movHud(hunger, thirst)
         return
     end
 
-    exports[resource]:UpdateComponentValue('hunger', hunger / 100)
-    exports[resource]:UpdateComponentValue('thirst', thirst / 100)
+    local ok, err = pcall(function()
+        exports[resource]:UpdateComponentValue('hunger', hunger / 100)
+        exports[resource]:UpdateComponentValue('thirst', thirst / 100)
+    end)
+
+    if not ok and Config.Debug then
+        print(('[waterdispenser] HUD sync failed: %s'):format(err))
+    end
 end
 
 RegisterNetEvent('waterdispenser:client:syncNeeds', function(hunger, thirst)

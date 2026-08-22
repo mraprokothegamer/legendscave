@@ -30,7 +30,29 @@ local function detectFramework()
     return nil
 end
 
+local function checkDependencies()
+    local required = { 'ox_lib', 'ox_target' }
+    local missing = {}
+
+    for i = 1, #required do
+        if GetResourceState(required[i]) ~= 'started' then
+            missing[#missing + 1] = required[i]
+        end
+    end
+
+    if #missing > 0 then
+        print(('^1[waterdispenser] Missing dependencies: %s^0'):format(table.concat(missing, ', ')))
+        return false
+    end
+
+    return true
+end
+
 function Framework.init()
+    if not checkDependencies() then
+        return false
+    end
+
     activeFramework = detectFramework()
 
     if not activeFramework then
@@ -40,18 +62,27 @@ function Framework.init()
 
     if activeFramework == 'qbox' then
         if GetResourceState('qbx_core') == 'started' then
-            print('^2[waterdispenser] Using Qbox (qbx_core)^0')
+            print('^2[waterdispenser] Framework: Qbox (qbx_core)^0')
         else
             QBCore = exports['qb-core']:GetCoreObject()
-            print('^2[waterdispenser] Using Qbox (qb-core)^0')
+            print('^2[waterdispenser] Framework: Qbox (qb-core)^0')
         end
     end
 
     if activeFramework == 'esx' then
+        if GetResourceState('esx_status') ~= 'started' then
+            print('^3[waterdispenser] Warning: esx_status is not started.^0')
+        end
+
         ESX = exports['es_extended']:getSharedObject()
-        print('^2[waterdispenser] Using ESX^0')
+        print('^2[waterdispenser] Framework: ESX^0')
     end
 
+    if Config.Hud == '17mov_Hud' and GetResourceState(Config.HudResource) ~= 'started' then
+        print(('^3[waterdispenser] Warning: %s is not started. HUD sync may not work until it loads.^0'):format(Config.HudResource))
+    end
+
+    print('^2[waterdispenser] Production build loaded successfully.^0')
     return true
 end
 
@@ -96,6 +127,10 @@ function Framework.addThirst(source, player, refillPercent)
 
         player.Functions.SetMetaData('thirst', newThirst)
 
+        if player.Functions.Save then
+            player.Functions.Save()
+        end
+
         local hunger = player.PlayerData.metadata.hunger or 100
         TriggerClientEvent('hud:client:UpdateNeeds', source, hunger, newThirst)
         TriggerClientEvent('waterdispenser:client:syncNeeds', source, hunger, newThirst)
@@ -114,4 +149,8 @@ end
 
 function Framework.isReady()
     return activeFramework ~= nil
+end
+
+function Framework.getName()
+    return activeFramework
 end
