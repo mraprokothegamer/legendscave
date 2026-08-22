@@ -4,7 +4,7 @@ game 'gta5'
 name 'waterdispenser'
 author 'legendscave'
 description 'Production-ready emergency water dispensers for Qbox/ESX with ox_target, 17mov_Hud, and immersive NUI'
-version '2.0.6'
+version '2.0.7'
 
 lua54 'yes'
 

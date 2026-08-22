@@ -37,9 +37,10 @@ Config.FillDuration = 7000
 Config.SipDelay = 400
 Config.AnimDuration = Config.FillDuration + 2500
 
--- Cup in RIGHT hand (57005 = SKEL_R_Hand) — matches attachCup offsets
-Config.CupModel = `prop_cs_paper_cup`
-Config.CupModelFallback = `prop_plastic_cup_02`
+-- Cup in RIGHT hand (57005 = SKEL_R_Hand)
+-- prop_cs_paper_cup is invalid on some builds — use plastic cup first
+Config.CupModel = `prop_plastic_cup_02`
+Config.CupModelFallback = `p_amb_coffeecup_01`
 Config.CupBone = 57005
 Config.CupOffset = { x = 0.12, y = 0.02, z = -0.02 }
 Config.CupRotation = { x = -80.0, y = 0.0, z = 10.0 }
