@@ -4,7 +4,7 @@ game 'gta5'
 name 'waterdispenser'
 description 'Auto-detecting water dispensers with ox_target, Qbox/ESX thirst, and immersive drink animations'
 author 'legendscave'
-version '1.3.0'
+version '1.3.1'
 
 lua54 'yes'
 
@@ -22,6 +22,7 @@ shared_scripts {
 }
 
 client_scripts {
+    'client/hud.lua',
     'client.lua',
 }
 

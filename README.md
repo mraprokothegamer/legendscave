@@ -24,7 +24,7 @@ Auto-detecting emergency water dispenser resource with:
 
 **Qbox (recommended for your setup):**
 - [qbx_core](https://github.com/Qbox-project/qbx_core)
-- HUD that listens to `hud:client:UpdateNeeds` (e.g. qbx_hud / qb-hud)
+- [17mov_Hud](https://17movement.net/products/advanced-hud) (or HUD that listens to `hud:client:UpdateNeeds`)
 
 **ESX (alternative):**
 - [es_extended](https://github.com/esx-framework/esx_core)
@@ -49,6 +49,8 @@ The script auto-detects `qbx_core` → `qb-core` → `es_extended`. Override wit
 | Option | Default | Description |
 |--------|---------|-------------|
 | `Config.Framework` | `auto` | `auto`, `qbox`, or `esx` |
+| `Config.Hud` | `17mov_Hud` | `17mov_Hud`, `auto`, or `default` |
+| `Config.HudResource` | `17mov_Hud` | Resource name for 17mov HUD exports |
 | `Config.ThirstRefill` | `10` | Emergency thirst restored (percent) |
 | `Config.MaxDrinksPerHour` | `2` | Max drinks per player per hour |
 | `Config.CooldownWindow` | `3600` | Cooldown window in seconds |

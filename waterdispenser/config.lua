@@ -4,6 +4,14 @@ Config = {}
 -- auto detects qbx_core/qb-core first, then es_extended
 Config.Framework = 'auto'
 
+-- HUD integration: '17mov_Hud', 'auto', or 'default'
+-- 17mov_Hud = sync thirst via 17mov_Hud exports + hud:client:UpdateNeeds
+-- auto       = use 17mov_Hud when the resource is running
+-- default    = standard hud:client:UpdateNeeds / esx_status only
+Config.Hud = '17mov_Hud'
+
+Config.HudResource = '17mov_Hud'
+
 -- Emergency city water: free for everyone
 Config.FreeWater = true
 

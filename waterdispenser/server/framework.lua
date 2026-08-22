@@ -98,6 +98,7 @@ function Framework.addThirst(source, player, refillPercent)
 
         local hunger = player.PlayerData.metadata.hunger or 100
         TriggerClientEvent('hud:client:UpdateNeeds', source, hunger, newThirst)
+        TriggerClientEvent('waterdispenser:client:syncNeeds', source, hunger, newThirst)
 
         return true
     end
