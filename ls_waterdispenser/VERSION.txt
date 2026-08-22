@@ -1,4 +1,1 @@
-2.3.5
-main.lua is self-contained (built-in Prop fallback).
-Console must show: client/main.lua v2.3.5 loaded
-Optional: client/prop.lua v2.3.5 loaded
+2.4.0

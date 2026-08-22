@@ -3,8 +3,8 @@ game 'gta5'
 
 name 'ls_waterdispenser'
 author 'legendscave'
-description 'Existing Rockstar water coolers — free drink, cup prop + auto-hiding NUI'
-version '2.3.5'
+description 'Drink from existing water coolers (ox_target + NUI + cup)'
+version '2.4.0'
 
 lua54 'yes'
 
@@ -22,10 +22,8 @@ shared_scripts {
     'shared/validate.lua',
 }
 
--- prop.lua is optional; main.lua has a built-in Prop fallback (v2.3.5+)
 client_scripts {
     'client/hud.lua',
-    'client/prop.lua',
     'client/main.lua',
 }
 
