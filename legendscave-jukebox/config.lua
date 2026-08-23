@@ -79,7 +79,7 @@ Config.MusicProps = {
     `h4_prop_battle_dj_box_02a`,
     `h4_prop_battle_dj_box_03a`,
 
-    -- Home theatre / apartment AV units
+    -- Home theatre / apartment AV units (TV + media player / stereo below)
     `apa_mp_h_str_avunitl_01_b`,
     `apa_mp_h_str_avunitl_04`,
     `apa_mp_h_str_avunitm_01`,
@@ -89,6 +89,14 @@ Config.MusicProps = {
     `hei_heist_str_avunitl_01`,
     `hei_heist_str_avunitl_03`,
     `hei_heist_str_avunits_01`,
+
+    -- TV cabinets / home stereo stacks (common in older interiors)
+    `prop_tv_cabinet_03`,
+    `prop_tv_cabinet_04`,
+    `prop_tv_cabinet_05`,
+    `v_res_fh_speaker`,
+    `v_16_hifi`,
+    `v_ind_cs_hifi`,
 }
 
 Config.Target = {
