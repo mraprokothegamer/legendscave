@@ -14,14 +14,21 @@ Config.Playlist = {
 --- Rockstar / GTA audio props already placed in the world (not inventory items).
 --- Names verified against common GTA V object lists; invalid hashes are skipped by the game.
 Config.MusicProps = {
+    -- Portable / classic
     `prop_boombox_01`,
     `prop_ghettoblast_01`,
     `prop_ghettoblast_02`,
     `prop_portable_hifi_01`,
+    `prop_hifi_01`,
     `prop_radio_01`,
     `prop_mp3_dock`,
+    `prop_console_01`,
+
+    -- Jukeboxes
     `prop_jukebox_01`,
     `prop_jukebox_02`,
+
+    -- Speakers / amp
     `prop_out_door_speaker`,
     `prop_speaker_01`,
     `prop_speaker_02`,
@@ -31,10 +38,57 @@ Config.MusicProps = {
     `prop_speaker_07`,
     `prop_speaker_08`,
     `prop_amp_01`,
+    `sf_prop_sf_speaker_l_01a`,
+    `sf_prop_sf_speaker_stand_01a`,
+    `sf_prop_sf_speaker_wall_01a`,
+    `as_prop_as_speakerdock`,
+
+    -- Interior audio
     `v_res_pcspeaker`,
     `v_res_mm_audio`,
     `v_res_fh_speakerdock`,
     `v_club_vu_djunit`,
+    `v_club_vu_deckcase`,
+    `v_club_roc_eq1`,
+    `v_club_roc_eq2`,
+
+    -- DJ booths / decks / mixers (base + After Hours / Cayo)
+    `prop_dj_deck_01`,
+    `prop_dj_deck_02`,
+    `ba_prop_battle_dj_stand`,
+    `ba_prop_battle_dj_deck_01a`,
+    `ba_prop_battle_dj_kit_mixer`,
+    `ba_prop_battle_dj_kit_speaker`,
+    `ba_prop_battle_dj_mixer_01a`,
+    `ba_prop_battle_dj_mixer_01b`,
+    `ba_prop_battle_dj_mixer_01c`,
+    `ba_prop_battle_dj_mixer_01d`,
+    `ba_prop_battle_dj_mixer_01e`,
+    `h4_prop_battle_dj_stand`,
+    `h4_prop_battle_dj_deck_01a`,
+    `h4_prop_battle_dj_deck_01b`,
+    `h4_prop_battle_dj_kit_mixer`,
+    `h4_prop_battle_dj_kit_speaker`,
+    `h4_prop_battle_dj_mixer_01a`,
+    `h4_prop_battle_dj_mixer_01b`,
+    `h4_prop_battle_dj_mixer_01c`,
+    `h4_prop_battle_dj_mixer_01d`,
+    `h4_prop_battle_dj_mixer_01e`,
+    `h4_prop_battle_dj_mixer_01f`,
+    `h4_prop_battle_dj_box_01a`,
+    `h4_prop_battle_dj_box_02a`,
+    `h4_prop_battle_dj_box_03a`,
+
+    -- Home theatre / apartment AV units
+    `apa_mp_h_str_avunitl_01_b`,
+    `apa_mp_h_str_avunitl_04`,
+    `apa_mp_h_str_avunitm_01`,
+    `apa_mp_h_str_avunitm_03`,
+    `apa_mp_h_str_avunits_01`,
+    `apa_mp_h_str_avunits_04`,
+    `hei_heist_str_avunitl_01`,
+    `hei_heist_str_avunitl_03`,
+    `hei_heist_str_avunits_01`,
 }
 
 Config.Target = {

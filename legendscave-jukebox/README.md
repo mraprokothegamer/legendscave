@@ -31,7 +31,9 @@ ensure legendscave-jukebox
 
 ## Config props
 
-Verified-style models in `Config.MusicProps` include boomboxes, ghettoblasters, speakers, jukeboxes, docks, etc. Add or remove hashes there as needed for your map.
+Verified music-related models in `Config.MusicProps`, including boomboxes, speakers,
+jukeboxes, **DJ booths/decks/mixers**, and **apartment home-theatre AV units**.
+Add or remove hashes there as needed for your map.
 
 ## Notes
 
