@@ -43,7 +43,10 @@ Config.Target = {
     distance = 2.0,
 }
 
---- Neon marker (type 28 = horizontal circle)
+--- World marker ring above the active prop (off by default — looks noisy)
+Config.ShowMarker = false
+
+--- Neon marker (type 28 = horizontal circle) — only used when ShowMarker is true
 Config.Marker = {
     type = 28,
     offsetZ = 1.0,

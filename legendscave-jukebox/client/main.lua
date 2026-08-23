@@ -63,16 +63,18 @@ local function ensureDrawLoop()
                 local dist = #(pcoords - prop.coords)
                 if dist <= Config.MarkerDrawDistance then
                     sleep = 0
-                    local m = Config.Marker
-                    DrawMarker(
-                        m.type,
-                        prop.coords.x, prop.coords.y, prop.coords.z + m.offsetZ,
-                        0.0, 0.0, 0.0,
-                        0.0, 0.0, 0.0,
-                        m.scale, m.scale, m.scale,
-                        m.r, m.g, m.b, m.a,
-                        false, true, 2, false, nil, nil, false
-                    )
+                    if Config.ShowMarker then
+                        local m = Config.Marker
+                        DrawMarker(
+                            m.type,
+                            prop.coords.x, prop.coords.y, prop.coords.z + m.offsetZ,
+                            0.0, 0.0, 0.0,
+                            0.0, 0.0, 0.0,
+                            m.scale, m.scale, m.scale,
+                            m.r, m.g, m.b, m.a,
+                            false, true, 2, false, nil, nil, false
+                        )
+                    end
                     DrawText3D(
                         prop.coords.x, prop.coords.y, prop.coords.z + Config.Text.offsetZ,
                         ('Now Playing: %s'):format(prop.title),
