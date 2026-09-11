@@ -192,6 +192,32 @@ local function selfScanEnabled()
     return cfg.enabled ~= false
 end
 
+-- Same table scanPatient / treatments use. Nil means healthy.
+local function getSelfScanDenial(source)
+    if not isAmbulance(source) then
+        return Config.Messages.notAllowed
+    end
+
+    if not selfScanEnabled() then
+        return (Config.SelfScan and Config.SelfScan.disabledMessage) or 'Self-scan is disabled.'
+    end
+
+    if Config.SelfScan and Config.SelfScan.requireIllness and not activeIllnesses[source] then
+        return Config.SelfScan.notIllMessage or 'You have no weather-related sickness to scan.'
+    end
+
+    return nil
+end
+
+lib.callback.register('legends-cave-medical:server:canSelfScan', function(source)
+    local denial = getSelfScanDenial(source)
+    if denial then
+        return false, denial
+    end
+
+    return true
+end)
+
 RegisterNetEvent('legends-cave-medical:server:scanPatient', function(patientServerId, weatherName)
     local source = source
 
@@ -209,13 +235,9 @@ RegisterNetEvent('legends-cave-medical:server:scanPatient', function(patientServ
     local isSelfScan = patient == source
 
     if isSelfScan then
-        if not selfScanEnabled() then
-            notify(source, (Config.SelfScan and Config.SelfScan.disabledMessage) or 'Self-scan is disabled.', 'error')
-            return
-        end
-
-        if Config.SelfScan and Config.SelfScan.requireIllness and not activeIllnesses[source] then
-            notify(source, Config.SelfScan.notIllMessage or 'You have no weather-related sickness to scan.', 'error')
+        local denial = getSelfScanDenial(source)
+        if denial then
+            notify(source, denial, 'error')
             return
         end
     end

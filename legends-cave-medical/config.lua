@@ -80,7 +80,7 @@ Config.Tablet = {
 -- enabled = false forbids self-scan; requireIllness = true only allows it when already sick.
 Config.SelfScan = {
     enabled = true,
-    requireIllness = false,
+    requireIllness = true,
     buttonLabel = 'Scan Self',
     disabledMessage = 'Self-scan is disabled.',
     notIllMessage = 'You have no weather-related sickness to scan.',

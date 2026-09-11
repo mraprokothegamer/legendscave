@@ -263,6 +263,14 @@ RegisterNUICallback('selfScan', function(_, cb)
         return
     end
 
+    -- Server activeIllnesses is the diagnosis source of truth. Ask before
+    -- closing the tablet or running the scan animation.
+    local allowed, message = lib.callback.await('legends-cave-medical:server:canSelfScan', false)
+    if not allowed then
+        notify(message or (Config.SelfScan and Config.SelfScan.notIllMessage) or 'You have no weather-related sickness to scan.', 'error')
+        return
+    end
+
     hideScanUi()
     CreateThread(function()
         Wait(100)
