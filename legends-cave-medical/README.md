@@ -109,6 +109,7 @@ Add the items from [installation/ox_items.lua](installation/ox_items.lua) to you
     weight = 750,
     stack = false,
     close = true,
+    consume = 0,
     image = 'lc_mediscan_tablet.png',
     client = {
         export = 'legends-cave-medical.useDoctorTablet'

@@ -300,7 +300,7 @@ RegisterNUICallback('saveScanNote', function(data, cb)
     cb({ ok = true })
 end)
 
-exports('useTreatmentPill', function(data, slot)
+function useTreatmentPill(data, slot)
     local itemName = data and data.name
     local treatment = itemName and Config.TreatmentItems[itemName]
     if not treatment then
@@ -340,9 +340,9 @@ exports('useTreatmentPill', function(data, slot)
             TriggerServerEvent('legends-cave-medical:server:useTreatment', itemName)
         end
     end)
-end)
+end
 
-exports('useDoctorTablet', function(data, slot)
+function useDoctorTablet(data, slot)
     if data and data.name ~= Config.Tablet.item then
         return
     end
@@ -364,13 +364,18 @@ exports('useDoctorTablet', function(data, slot)
     end
 
     notify(Config.Tablet.noScanMessage, 'error')
-end)
+end
+
+exports('useTreatmentPill', useTreatmentPill)
+exports('useDoctorTablet', useDoctorTablet)
 
 AddEventHandler('onClientResourceStart', function(resourceName)
     if resourceName ~= GetCurrentResourceName() then
         return
     end
 
+    exports('useTreatmentPill', useTreatmentPill)
+    exports('useDoctorTablet', useDoctorTablet)
     hideScanUi()
     CreateThread(function()
         Wait(100)

@@ -22,6 +22,13 @@ server_scripts {
 
 ui_page 'html/index.html'
 
+-- ox_inventory looks these up as exports['legends-cave-medical']['useDoctorTablet'].
+-- fxmanifest `exports` binds the global functions; client Lua also registers them at runtime.
+exports {
+    'useDoctorTablet',
+    'useTreatmentPill'
+}
+
 files {
     'html/index.html',
     'html/assets/*.png',

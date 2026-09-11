@@ -39,6 +39,7 @@
     weight = 750,
     stack = false,
     close = true,
+    consume = 0,
     image = 'lc_mediscan_tablet.png',
     description = 'EMS diagnostic tablet used to view the latest completed patient scan.',
     client = {
