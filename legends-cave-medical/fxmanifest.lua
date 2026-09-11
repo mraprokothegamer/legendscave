@@ -24,7 +24,8 @@ ui_page 'html/index.html'
 
 files {
     'html/index.html',
-    'html/assets/skeletal-scan.png',
+    'html/assets/*.png',
+    'html/**/*',
     'installation/ox_items.lua'
 }
 
