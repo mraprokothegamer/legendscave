@@ -146,6 +146,32 @@
             gap: 8px;
         }
 
+        .self-scan-btn {
+            min-height: 28px;
+            padding: 5px 10px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(72, 228, 240, 0.16);
+            color: var(--accent);
+            font-family: inherit;
+            font-size: var(--font-chip);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .self-scan-btn:hover,
+        .self-scan-btn:focus-visible {
+            background: rgba(72, 228, 240, 0.28);
+            outline: none;
+        }
+
+        .self-scan-btn[hidden] {
+            display: none !important;
+        }
+
         .chip {
             min-width: 88px;
             padding: 5px 8px;
@@ -492,6 +518,7 @@
                 <strong>MediScan Tablet</strong>
             </div>
             <div class="toolbar">
+                <button class="self-scan-btn" id="selfScanBtn" type="button" hidden onclick="selfScan()">Scan Self</button>
                 <div class="chip" id="severityChip">Normal</div>
                 <div class="chip" id="weatherChip">Weather: --</div>
                 <button class="close" type="button" onclick="closeScan()" aria-label="Close">x</button>
@@ -638,6 +665,8 @@
                 label: 'HemoPurge Pills'
             },
             doctorNote: 'Patient exposed to dense smog. Prescribe HemoPurge and recheck oxygen after treatment.',
+            canSelfScan: true,
+            selfScanLabel: 'Scan Self',
             history: [
                 {
                     id: 1017,
@@ -662,8 +691,77 @@
             ]
         };
 
+        const sampleSelfScan = {
+            patientId: 1,
+            recordId: 1024,
+            patientName: 'Dr. Nova Cross',
+            patient: {
+                citizenid: 'LC-10012',
+                birthdate: '1988-03-12',
+                gender: 'Female',
+                phone: '555-0100'
+            },
+            doctorName: 'Dr. Nova Cross',
+            scannedAt: '2026-09-11 09:41:08',
+            weather: 'RAIN',
+            category: 'respiratory',
+            illness: 'Stormlung Syndrome',
+            description: 'A wet-weather respiratory sickness caused by storm exposure. Patient may cough, run a fever, and show reduced oxygen saturation.',
+            severity: 'Normal',
+            checkupComplete: true,
+            requiredChecks: ['Oxygen saturation check', 'Heart check', 'Full medical check-up'],
+            vitals: {
+                temperature: 38.6,
+                heartRate: 104,
+                oxygen: 88,
+                bloodPressure: 118
+            },
+            prescription: {
+                item: 'lc_aeroclear_capsules',
+                label: 'AeroClear Capsules'
+            },
+            doctorNote: 'Self-scan after rain exposure on shift. AeroClear before returning to the bay.',
+            canSelfScan: true,
+            selfScanLabel: 'Scan Self',
+            isSelfScan: true,
+            history: [
+                {
+                    id: 1024,
+                    timestamp: '2026-09-11 09:41:08',
+                    doctor: 'Dr. Nova Cross',
+                    illness: 'Stormlung Syndrome',
+                    severity: 'Normal',
+                    prescription: { item: 'lc_aeroclear_capsules', label: 'AeroClear Capsules' },
+                    note: 'Self-scan after rain exposure on shift. AeroClear before returning to the bay.',
+                    status: 'Self-scan'
+                },
+                {
+                    id: 1011,
+                    timestamp: '2026-09-10 16:22:41',
+                    doctor: 'Dr. Mira Sol',
+                    illness: 'Sunflare Fever',
+                    severity: 'Severe',
+                    prescription: { item: 'lc_sunveil_tablets', label: 'Sunveil Tablets' },
+                    note: 'Treated after heat warning.',
+                    status: 'Recovered'
+                }
+            ]
+        };
+
         function setText(id, value) {
             document.getElementById(id).textContent = value;
+        }
+
+        function setSelfScanButton(scan) {
+            const button = document.getElementById('selfScanBtn');
+            if (!button) {
+                return;
+            }
+
+            const enabled = Boolean(scan && scan.canSelfScan);
+            button.hidden = !enabled;
+            button.textContent = (scan && scan.selfScanLabel) || 'Scan Self';
+            button.disabled = false;
         }
 
         function formatVitals(vitals) {
@@ -728,7 +826,7 @@
             const history = Array.isArray(scan.history) ? scan.history : [];
             const prescription = scan.prescription || {};
 
-            setText('scanId', `SCAN ${scan.recordId || '--'}`);
+            setText('scanId', scan.isSelfScan ? `SELF ${scan.recordId || '--'}` : `SCAN ${scan.recordId || '--'}`);
             setText('patientName', scan.patientName || patient.name || 'Unknown Patient');
             setText('citizenid', patient.citizenid || 'Unknown');
             setText('birthdate', patient.birthdate || 'Unknown');
@@ -744,9 +842,33 @@
             document.getElementById('doctorNote').value = scan.doctorNote || '';
             document.getElementById('prescription').value = prescription.item || 'lc_aeroclear_capsules';
 
+            setSelfScanButton(scan);
             formatVitals(vitals);
             renderChecks(checks);
             renderHistory(history);
+            document.querySelector('.tablet').classList.add('is-open');
+        }
+
+        function openTablet(data) {
+            currentScan = null;
+            setText('scanId', 'READY');
+            setText('patientName', 'Ready to scan');
+            setText('citizenid', '—');
+            setText('birthdate', '—');
+            setText('gender', '—');
+            setText('illness', 'No patient loaded');
+            setText('description', 'Use Scan Self in the header, or third-eye another player to run a medical check-up.');
+            setText('severityChip', 'Idle');
+            setText('weatherChip', 'Weather: --');
+            setText('checkupStatus', 'Check-up: --');
+            setText('doctorName', 'Dr. --');
+            setText('scannedAt', '--');
+            document.getElementById('doctorNote').value = '';
+            document.getElementById('prescription').value = 'lc_aeroclear_capsules';
+            setSelfScanButton(data);
+            formatVitals({});
+            renderChecks([]);
+            renderHistory([]);
             document.querySelector('.tablet').classList.add('is-open');
         }
 
@@ -755,12 +877,15 @@
             if (tablet) {
                 tablet.classList.remove('is-open');
             }
+            setSelfScanButton({ canSelfScan: false });
         }
 
         window.addEventListener('message', (event) => {
             const data = event.data || {};
             if (data.action === 'showScanResult') {
                 renderScan(data);
+            } else if (data.action === 'openTablet') {
+                openTablet(data);
             } else if (data.action === 'hideScan' || data.action === 'hideScanResult') {
                 hideScan();
             }
@@ -809,6 +934,10 @@
             postNui('closeScan', {});
         }
 
+        function selfScan() {
+            postNui('selfScan', {});
+        }
+
         function resolveSkeletonSrc() {
             const img = document.getElementById('skeletonImage');
             if (!img) return;
@@ -830,19 +959,29 @@
             }
 
             document.body.classList.add('nui-preview');
-            const tablet = document.querySelector('.tablet');
 
             if (mode === 'open') {
-                if (tablet) tablet.classList.add('is-open');
+                openTablet({
+                    canSelfScan: true,
+                    selfScanLabel: 'Scan Self'
+                });
                 return;
             }
 
             if (mode === 'scanning') {
-                if (tablet) tablet.classList.add('is-open');
+                openTablet({
+                    canSelfScan: true,
+                    selfScanLabel: 'Scan Self'
+                });
                 setText('checkupStatus', 'Check-up: Scanning...');
                 setText('severityChip', 'Scanning');
                 setText('illness', 'Scanning...');
                 setText('description', 'Doctor check-up in progress.');
+                return;
+            }
+
+            if (mode === 'self-scan') {
+                renderScan(sampleSelfScan);
                 return;
             }
 

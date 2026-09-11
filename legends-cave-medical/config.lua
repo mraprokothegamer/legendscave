@@ -71,8 +71,20 @@ Config.Tablet = {
     label = 'MediScan Tablet',
     autoOpenAfterScan = true,
     requireAmbulanceJob = true,
-    noScanMessage = 'No scan result stored. Run a third-eye medical check-up first.',
+    noScanMessage = 'No scan result stored. Run a third-eye medical check-up or Scan Self from the tablet.',
     notAllowedMessage = 'Only medical staff can use the MediScan Tablet.'
+}
+
+-- Doctors can scan their own ped via the tablet "Scan Self" button.
+-- Add this whole table if you keep an older config.lua on the live server.
+-- enabled = false forbids self-scan; requireIllness = true only allows it when already sick.
+Config.SelfScan = {
+    enabled = true,
+    requireIllness = false,
+    buttonLabel = 'Scan Self',
+    disabledMessage = 'Self-scan is disabled.',
+    notIllMessage = 'You have no weather-related sickness to scan.',
+    scanningLabel = 'Running self check-up...'
 }
 
 Config.WeatherWarning = {

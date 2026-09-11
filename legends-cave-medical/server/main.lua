@@ -137,6 +137,7 @@ local function createScanRecord(patient, doctor, illness)
         id = scanCounter,
         timestamp = os.date('%Y-%m-%d %H:%M:%S'),
         doctor = getPatientName(doctor),
+        citizenid = getPlayerDetails(patient).citizenid,
         illness = illness.name,
         severity = illness.severe and 'Severe' or 'Normal',
         weather = illness.weather,
@@ -182,6 +183,15 @@ RegisterNetEvent('legends-cave-medical:server:weatherExposure', function(weather
     setPatientIllness(source, createIllnessState(condition, category, tostring(weatherName or 'UNKNOWN')))
 end)
 
+local function selfScanEnabled()
+    local cfg = Config.SelfScan
+    if cfg == nil then
+        return true
+    end
+
+    return cfg.enabled ~= false
+end
+
 RegisterNetEvent('legends-cave-medical:server:scanPatient', function(patientServerId, weatherName)
     local source = source
 
@@ -196,6 +206,20 @@ RegisterNetEvent('legends-cave-medical:server:scanPatient', function(patientServ
         return
     end
 
+    local isSelfScan = patient == source
+
+    if isSelfScan then
+        if not selfScanEnabled() then
+            notify(source, (Config.SelfScan and Config.SelfScan.disabledMessage) or 'Self-scan is disabled.', 'error')
+            return
+        end
+
+        if Config.SelfScan and Config.SelfScan.requireIllness and not activeIllnesses[source] then
+            notify(source, Config.SelfScan.notIllMessage or 'You have no weather-related sickness to scan.', 'error')
+            return
+        end
+    end
+
     local sourcePed = GetPlayerPed(source)
     local patientPed = GetPlayerPed(patient)
     if sourcePed == 0 or patientPed == 0 then
@@ -203,11 +227,15 @@ RegisterNetEvent('legends-cave-medical:server:scanPatient', function(patientServ
         return
     end
 
-    local sourceCoords = GetEntityCoords(sourcePed)
-    local patientCoords = GetEntityCoords(patientPed)
-    if #(sourceCoords - patientCoords) > (Config.ScanDistance + 1.0) then
-        notify(source, Config.Messages.tooFar, 'error')
-        return
+    -- Self-scan still validates identity: patientServerId must resolve to source.
+    -- Other patients keep the distance check so a remote id cannot be scanned blindly.
+    if patient ~= source then
+        local sourceCoords = GetEntityCoords(sourcePed)
+        local patientCoords = GetEntityCoords(patientPed)
+        if #(sourceCoords - patientCoords) > (Config.ScanDistance + 1.0) then
+            notify(source, Config.Messages.tooFar, 'error')
+            return
+        end
     end
 
     local illness = activeIllnesses[patient]
@@ -248,10 +276,11 @@ RegisterNetEvent('legends-cave-medical:server:scanPatient', function(patientServ
         vitals = illness.vitals,
         prescription = scanRecord.prescription,
         doctorNote = scanRecord.note,
-        history = history
+        history = history,
+        isSelfScan = isSelfScan
     })
 
-    if illness.severe then
+    if illness.severe and patient ~= source then
         notify(patient, 'Doctor check-up completed. Correct medication can now work.', 'success')
     end
 end)
@@ -296,8 +325,31 @@ RegisterNetEvent('legends-cave-medical:server:saveScanNote', function(patientId,
 
     local patient = tonumber(patientId)
     local record = tonumber(recordId)
-    if not patient or not record then
+    if not patient or not record or not GetPlayerName(patient) then
+        notify(source, Config.Messages.invalidPatient, 'error')
         return
+    end
+
+    local isSelfScan = patient == source
+    if isSelfScan then
+        if not selfScanEnabled() then
+            notify(source, (Config.SelfScan and Config.SelfScan.disabledMessage) or 'Self-scan is disabled.', 'error')
+            return
+        end
+    else
+        local sourcePed = GetPlayerPed(source)
+        local patientPed = GetPlayerPed(patient)
+        if sourcePed == 0 or patientPed == 0 then
+            notify(source, Config.Messages.invalidPatient, 'error')
+            return
+        end
+
+        local sourceCoords = GetEntityCoords(sourcePed)
+        local patientCoords = GetEntityCoords(patientPed)
+        if #(sourceCoords - patientCoords) > (Config.ScanDistance + 1.0) then
+            notify(source, Config.Messages.tooFar, 'error')
+            return
+        end
     end
 
     local history = getHistory(patient)

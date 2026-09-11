@@ -9,6 +9,19 @@ local function notify(message, notifyType)
     })
 end
 
+local function selfScanEnabled()
+    local cfg = Config.SelfScan
+    if cfg == nil then
+        return true
+    end
+
+    return cfg.enabled ~= false
+end
+
+local function selfScanLabel()
+    return (Config.SelfScan and Config.SelfScan.buttonLabel) or 'Scan Self'
+end
+
 local function hideScanUi()
     SetNuiFocus(false, false)
     SendNUIMessage({
@@ -16,8 +29,16 @@ local function hideScanUi()
     })
 end
 
+local function attachSelfScanFlags(scan)
+    scan = scan or {}
+    scan.canSelfScan = selfScanEnabled()
+    scan.selfScanLabel = selfScanLabel()
+    return scan
+end
+
 local function openScanResult(scan)
     SetNuiFocus(true, true)
+    scan = attachSelfScanFlags(scan)
     SendNUIMessage({
         action = 'showScanResult',
         patientId = scan.patientId,
@@ -36,7 +57,19 @@ local function openScanResult(scan)
         vitals = scan.vitals,
         prescription = scan.prescription,
         doctorNote = scan.doctorNote,
-        history = scan.history
+        history = scan.history,
+        canSelfScan = scan.canSelfScan,
+        selfScanLabel = scan.selfScanLabel,
+        isSelfScan = scan.isSelfScan == true
+    })
+end
+
+local function openTabletHome()
+    SetNuiFocus(true, true)
+    SendNUIMessage({
+        action = 'openTablet',
+        canSelfScan = selfScanEnabled(),
+        selfScanLabel = selfScanLabel()
     })
 end
 
@@ -104,23 +137,46 @@ local function playSymptomAnimation()
 end
 
 local function scanPatient(entity)
-    if not entity or not DoesEntityExist(entity) or not IsPedAPlayer(entity) then
+    if not entity or not DoesEntityExist(entity) then
         notify(Config.Messages.invalidPatient, 'error')
         return
     end
 
-    local targetPlayer = NetworkGetPlayerIndexFromPed(entity)
-    if targetPlayer == -1 then
+    local localServerId = GetPlayerServerId(PlayerId())
+    local patientServerId
+
+    if entity == PlayerPedId() then
+        patientServerId = localServerId
+    else
+        if not IsPedAPlayer(entity) then
+            notify(Config.Messages.invalidPatient, 'error')
+            return
+        end
+
+        local targetPlayer = NetworkGetPlayerIndexFromPed(entity)
+        if targetPlayer == -1 then
+            notify(Config.Messages.invalidPatient, 'error')
+            return
+        end
+
+        patientServerId = GetPlayerServerId(targetPlayer)
+    end
+
+    if not patientServerId or patientServerId == 0 then
         notify(Config.Messages.invalidPatient, 'error')
         return
     end
 
-    local patientServerId = GetPlayerServerId(targetPlayer)
     local weatherName = getWeatherName()
+    local isSelf = patientServerId == localServerId
+    local scanLabel = Config.Messages.severeScanning
+    if isSelf and Config.SelfScan and Config.SelfScan.scanningLabel then
+        scanLabel = Config.SelfScan.scanningLabel
+    end
 
     local finished = lib.progressCircle({
         duration = Config.ScanDuration,
-        label = Config.Messages.severeScanning,
+        label = scanLabel,
         position = 'bottom',
         useWhileDead = false,
         canCancel = true,
@@ -190,13 +246,28 @@ RegisterNetEvent('legends-cave-medical:client:setSickness', function(illness)
 end)
 
 RegisterNetEvent('legends-cave-medical:client:showScanResult', function(scan)
-    lastScanResult = scan
+    lastScanResult = attachSelfScanFlags(scan)
 
     if Config.Tablet.autoOpenAfterScan then
-        openScanResult(scan)
+        openScanResult(lastScanResult)
     else
         notify('Scan complete. Open your MediScan Tablet to view the results.', 'success')
     end
+end)
+
+RegisterNUICallback('selfScan', function(_, cb)
+    cb({ ok = true })
+
+    if not selfScanEnabled() then
+        notify((Config.SelfScan and Config.SelfScan.disabledMessage) or 'Self-scan is disabled.', 'error')
+        return
+    end
+
+    hideScanUi()
+    CreateThread(function()
+        Wait(100)
+        scanPatient(PlayerPedId())
+    end)
 end)
 
 RegisterNUICallback('closeScan', function(_, cb)
@@ -274,12 +345,17 @@ exports('useDoctorTablet', function(data, slot)
         return
     end
 
-    if not lastScanResult then
-        notify(Config.Tablet.noScanMessage, 'error')
+    if lastScanResult then
+        openScanResult(lastScanResult)
         return
     end
 
-    openScanResult(lastScanResult)
+    if selfScanEnabled() then
+        openTabletHome()
+        return
+    end
+
+    notify(Config.Tablet.noScanMessage, 'error')
 end)
 
 AddEventHandler('onClientResourceStart', function(resourceName)
