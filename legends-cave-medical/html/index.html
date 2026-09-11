@@ -361,54 +361,6 @@
                 drop-shadow(0 0 32px rgba(72, 228, 240, 0.32));
         }
 
-        .diagnostic-ring {
-            position: absolute;
-            left: 50%;
-            border: 2px solid rgba(255, 94, 122, 0.78);
-            background: rgba(255, 94, 122, 0.12);
-            box-shadow: 0 0 26px rgba(255, 94, 122, 0.32), inset 0 0 24px rgba(255, 94, 122, 0.14);
-            transform: translateX(-50%);
-            animation: pulse 1.8s ease-in-out infinite;
-        }
-
-        .diagnostic-ring.chest {
-            top: 22%;
-            width: 60%;
-            height: 26%;
-            border-radius: 48% 48% 42% 42%;
-        }
-
-        .diagnostic-ring.core {
-            top: 49%;
-            width: 43%;
-            height: 15%;
-            border-radius: 46%;
-        }
-
-        .scan-dot {
-            position: absolute;
-            left: 50%;
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--accent);
-            box-shadow: 0 0 12px rgba(72, 228, 240, 0.9);
-            transform: translateX(-50%);
-        }
-
-        .scan-dot.chest {
-            top: 35%;
-        }
-
-        .scan-dot.core {
-            top: 55%;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.45; }
-            50% { opacity: 1; }
-        }
-
         .checks {
             margin-top: 10px;
             padding: 10px;
@@ -612,10 +564,6 @@
                 <div class="scan-line"></div>
                 <div class="scan-body" aria-label="Full skeletal body diagnostic view" role="img">
                     <img id="skeletonImage" class="skeleton-image" src="assets/skeletal-scan.png" alt="Skeletal diagnostic scan">
-                    <div class="diagnostic-ring chest"></div>
-                    <div class="diagnostic-ring core"></div>
-                    <div class="scan-dot chest"></div>
-                    <div class="scan-dot core"></div>
                 </div>
             </div>
         </section>
