@@ -23,9 +23,16 @@ Config.ScanAnimation = {
     clip = 'idle_a'
 }
 
+-- Used by third-eye scan and tablet Scan Self (same progress circle).
+-- sound.name / sound.set are PlaySoundFrontend natives; no extra audio files.
 Config.SevereScanAnimation = {
     dict = 'amb@medic@standing@timeofdeath@base',
-    clip = 'base'
+    clip = 'base',
+    sound = {
+        enabled = true,
+        name = 'FocusIn',
+        set = 'HintCamSounds'
+    }
 }
 
 Config.SymptomAnimation = {
@@ -36,19 +43,34 @@ Config.SymptomAnimation = {
             duration = 2000,
             dict = 'timetable@gardener@smoking_joint',
             clip = 'idle_cough',
-            flag = 48
+            flag = 48,
+            sound = {
+                enabled = true,
+                name = 'CONFIRM_BEEP',
+                set = 'HUD_MINI_GAME_SOUNDSET'
+            }
         },
         sneeze = {
             duration = 2000,
             dict = 'amb@code_human_wander_idles_fat@female@idle_a',
             clip = 'idle_b_sneeze',
-            flag = 48
+            flag = 48,
+            sound = {
+                enabled = true,
+                name = 'NAV_UP_DOWN',
+                set = 'HUD_FRONTEND_DEFAULT_SOUNDSET'
+            }
         },
         vomit = {
             duration = 2000,
             dict = 'missheistpaletoscore1leadinout',
             clip = 'trv_puking_leadout',
-            flag = 48
+            flag = 48,
+            sound = {
+                enabled = true,
+                name = 'CANCEL',
+                set = 'HUD_FRONTEND_DEFAULT_SOUNDSET'
+            }
         }
     }
 }
@@ -63,7 +85,12 @@ Config.HealthDrain = {
 Config.PillAnimation = {
     duration = 3500,
     dict = 'mp_suicide',
-    clip = 'pill'
+    clip = 'pill',
+    sound = {
+        enabled = true,
+        name = 'PICK_UP',
+        set = 'HUD_FRONTEND_DEFAULT_SOUNDSET'
+    }
 }
 
 Config.Tablet = {

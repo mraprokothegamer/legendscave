@@ -73,6 +73,20 @@ local function openTabletHome()
     })
 end
 
+local function playConfigSound(sound)
+    if type(sound) ~= 'table' or sound.enabled == false then
+        return
+    end
+
+    local name = sound.name
+    local set = sound.set
+    if type(name) ~= 'string' or name == '' or type(set) ~= 'string' or set == '' then
+        return
+    end
+
+    PlaySoundFrontend(-1, name, set, true)
+end
+
 local function loadAnimDict(dict)
     RequestAnimDict(dict)
     while not HasAnimDictLoaded(dict) do
@@ -121,6 +135,7 @@ local function playSymptomAnimation()
     end
 
     loadAnimDict(animation.dict)
+    playConfigSound(animation.sound)
     TaskPlayAnim(
         ped,
         animation.dict,
@@ -173,6 +188,8 @@ local function scanPatient(entity)
     if isSelf and Config.SelfScan and Config.SelfScan.scanningLabel then
         scanLabel = Config.SelfScan.scanningLabel
     end
+
+    playConfigSound(Config.SevereScanAnimation.sound)
 
     local finished = lib.progressCircle({
         duration = Config.ScanDuration,
@@ -312,6 +329,8 @@ function useTreatmentPill(data, slot)
         notify(message or Config.Messages.severeNeedsScan, 'error')
         return
     end
+
+    playConfigSound(Config.PillAnimation.sound)
 
     local finished = lib.progressCircle({
         duration = Config.PillAnimation.duration,
