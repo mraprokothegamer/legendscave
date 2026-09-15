@@ -856,10 +856,12 @@
             setText('citizenid', '—');
             setText('birthdate', '—');
             setText('gender', '—');
-            setText('illness', 'No patient loaded');
-            setText('description', 'Use Scan Self in the header, or third-eye another player to run a medical check-up.');
+            setText('illness', data.illness || 'No patient loaded');
+            setText('description', data.illness
+                ? 'Current weather illness is shown above. Scan Self or third-eye a patient for a full chart.'
+                : 'Use Scan Self in the header, or third-eye another player to run a medical check-up.');
             setText('severityChip', 'Idle');
-            setText('weatherChip', 'Weather: --');
+            setText('weatherChip', `Weather: ${data.weather || '--'}`);
             setText('checkupStatus', 'Check-up: --');
             setText('doctorName', 'Dr. --');
             setText('scannedAt', '--');

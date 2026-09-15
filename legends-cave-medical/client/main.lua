@@ -1,6 +1,7 @@
 local isSick = false
 local currentIllness = nil
 local lastScanResult = nil
+local lastKnownWeather = 'UNKNOWN'
 
 local function notify(message, notifyType)
     lib.notify({
@@ -69,7 +70,9 @@ local function openTabletHome()
     SendNUIMessage({
         action = 'openTablet',
         canSelfScan = selfScanEnabled(),
-        selfScanLabel = selfScanLabel()
+        selfScanLabel = selfScanLabel(),
+        weather = lastKnownWeather,
+        illness = currentIllness and currentIllness.name or nil
     })
 end
 
@@ -149,7 +152,6 @@ local function loadAnimDict(dict)
 end
 
 local function getWeatherName()
-    local weatherHash = GetPrevWeatherTypeHashName()
     local weatherTypes = {
         'EXTRASUNNY',
         'CLEAR',
@@ -164,16 +166,26 @@ local function getWeatherName()
         'SNOW',
         'BLIZZARD',
         'SNOWLIGHT',
-        'XMAS'
+        'XMAS',
+        'HALLOWEEN'
     }
 
-    for _, weatherName in ipairs(weatherTypes) do
-        if weatherHash == joaat(weatherName) then
-            return weatherName
+    local function fromHash(weatherHash)
+        for _, weatherName in ipairs(weatherTypes) do
+            if weatherHash == joaat(weatherName) then
+                return weatherName
+            end
         end
+        return nil
     end
 
-    return 'UNKNOWN'
+    return fromHash(GetPrevWeatherTypeHashName())
+        or fromHash(GetNextWeatherTypeHashName())
+        or 'UNKNOWN'
+end
+
+local function getWeatherCategory(weatherName)
+    return (Config.WeatherSources and Config.WeatherSources[weatherName]) or 'normal'
 end
 
 local function playSymptomAnimation()
@@ -290,7 +302,9 @@ end
 local function showWeatherWarning(weatherName)
     local message = Config.WeatherWarning.messages[weatherName] or Config.WeatherWarning.messages.UNKNOWN
 
+    -- Same id replaces any previous weather toast so it cannot stack or re-ring.
     lib.notify({
+        id = 'legends-cave-medical-weather',
         title = Config.WeatherWarning.title,
         description = message,
         type = 'warning',
@@ -307,13 +321,18 @@ local function showWeatherWarning(weatherName)
 end
 
 RegisterNetEvent('legends-cave-medical:client:setSickness', function(illness)
+    local wasSick = isSick
+    local previousName = currentIllness and currentIllness.name
     isSick = illness ~= nil
     currentIllness = illness
 
     if isSick then
-        notify(Config.Messages.becameSick, 'warning')
-        playSymptomAnimation()
-    else
+        local illnessName = illness.name or illness.symptom
+        if not wasSick or illnessName ~= previousName then
+            notify(Config.Messages.becameSick, 'warning')
+            playSymptomAnimation()
+        end
+    elseif wasSick then
         notify(Config.Messages.recovered, 'success')
         ClearPedTasks(PlayerPedId())
     end
@@ -481,14 +500,32 @@ CreateThread(function()
         return
     end
 
-    local lastWeather = getWeatherName()
+    -- Alert once on first check, then only when the weather *category* changes
+    -- (respiratory / toxic / heat / normal). RAIN<->THUNDER in the same storm
+    -- must not re-pop the toast or replay the notify sound.
+    local lastAnnouncedCategory = nil
+    local stableCategory = nil
+    local stableHits = 0
 
     while true do
         Wait(Config.WeatherWarning.checkInterval)
 
         local currentWeather = getWeatherName()
-        if currentWeather ~= lastWeather then
-            lastWeather = currentWeather
+        lastKnownWeather = currentWeather
+        local category = getWeatherCategory(currentWeather)
+
+        if category == stableCategory then
+            stableHits = stableHits + 1
+        else
+            stableCategory = category
+            stableHits = 1
+        end
+
+        local isFirst = lastAnnouncedCategory == nil and Config.WeatherWarning.alertOnFirstCheck ~= false
+        local categoryChanged = lastAnnouncedCategory ~= nil and category ~= lastAnnouncedCategory and stableHits >= 2
+
+        if isFirst or categoryChanged then
+            lastAnnouncedCategory = category
             showWeatherWarning(currentWeather)
         end
     end

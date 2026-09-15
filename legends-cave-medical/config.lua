@@ -123,6 +123,9 @@ Config.WeatherWarning = {
     enabled = true,
     checkInterval = 15000,
     title = 'City Wide Weather Warning',
+    -- One toast on first check, then only when weather category changes.
+    -- Same storm (RAIN/THUNDER/CLEARING) will not re-alert or re-ring.
+    alertOnFirstCheck = true,
     showInChat = true,
     messages = {
         RAIN = 'Rainfall reported city wide. Respiratory cases may increase.',
