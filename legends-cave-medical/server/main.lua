@@ -418,7 +418,37 @@ RegisterNetEvent('legends-cave-medical:server:useTreatment', function(itemName)
     notify(source, ('%s treated successfully.'):format(curedIllness), 'success')
 end)
 
+local lastSymptomSoundAt = {}
+
+RegisterNetEvent('legends-cave-medical:server:symptomSound', function(symptomType)
+    local source = source
+    if not activeIllnesses[source] then
+        return
+    end
+
+    symptomType = tostring(symptomType or '')
+    local types = Config.SymptomAnimation and Config.SymptomAnimation.types
+    local animation = types and types[symptomType]
+    if not animation then
+        return
+    end
+
+    local sound = animation.sound
+    if type(sound) ~= 'table' or sound.enabled == false then
+        return
+    end
+
+    local now = os.time()
+    if lastSymptomSoundAt[source] and (now - lastSymptomSoundAt[source]) < 2 then
+        return
+    end
+
+    lastSymptomSoundAt[source] = now
+    TriggerClientEvent('legends-cave-medical:client:symptomSound', -1, source, symptomType)
+end)
+
 AddEventHandler('playerDropped', function()
     activeIllnesses[source] = nil
     exposureCooldowns[source] = nil
+    lastSymptomSoundAt[source] = nil
 end)

@@ -888,6 +888,8 @@
                 openTablet(data);
             } else if (data.action === 'hideScan' || data.action === 'hideScanResult') {
                 hideScan();
+            } else if (data.action === 'playSymptomSound') {
+                playSymptomNuiSound(data);
             }
         });
 
@@ -896,6 +898,25 @@
                 closeScan();
             }
         });
+
+        function playSymptomNuiSound(payload) {
+            const file = (payload && payload.file) || (payload && payload.symptom && (`sounds/${payload.symptom}.wav`));
+            if (!file) {
+                return;
+            }
+
+            const volume = Math.max(0, Math.min(1, Number(payload && payload.volume)));
+            if (volume <= 0) {
+                return;
+            }
+
+            const audio = new Audio(file);
+            audio.volume = volume;
+            const play = audio.play();
+            if (play && typeof play.catch === 'function') {
+                play.catch(() => {});
+            }
+        }
 
         function postNui(name, payload) {
             if (typeof GetParentResourceName !== 'function') {

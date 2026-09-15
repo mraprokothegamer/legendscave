@@ -38,6 +38,8 @@ Config.SevereScanAnimation = {
 Config.SymptomAnimation = {
     repeatInterval = 30000,
     defaultType = 'cough',
+    -- Nearby clients play the symptom audio from the sick ped within this range.
+    soundDistance = 25.0,
     types = {
         cough = {
             duration = 2000,
@@ -46,8 +48,9 @@ Config.SymptomAnimation = {
             flag = 48,
             sound = {
                 enabled = true,
-                name = 'CONFIRM_BEEP',
-                set = 'HUD_MINI_GAME_SOUNDSET'
+                file = 'sounds/cough.wav',
+                speech = 'GENERIC_COUGH',
+                voice = 'A_M_M_MALIBU_01_WHITE_FULL_01'
             }
         },
         sneeze = {
@@ -57,8 +60,9 @@ Config.SymptomAnimation = {
             flag = 48,
             sound = {
                 enabled = true,
-                name = 'NAV_UP_DOWN',
-                set = 'HUD_FRONTEND_DEFAULT_SOUNDSET'
+                file = 'sounds/sneeze.wav',
+                speech = 'GENERIC_SHOCKED_MED',
+                voice = 'A_M_M_MALIBU_01_WHITE_FULL_01'
             }
         },
         vomit = {
@@ -68,8 +72,9 @@ Config.SymptomAnimation = {
             flag = 48,
             sound = {
                 enabled = true,
-                name = 'CANCEL',
-                set = 'HUD_FRONTEND_DEFAULT_SOUNDSET'
+                file = 'sounds/vomit.wav',
+                speech = 'GENERIC_CURSE_MED',
+                voice = 'A_M_M_MALIBU_01_WHITE_FULL_01'
             }
         }
     }

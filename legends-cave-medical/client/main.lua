@@ -73,6 +73,60 @@ local function openTabletHome()
     })
 end
 
+local function symptomSoundEnabled(sound)
+    return type(sound) == 'table' and sound.enabled ~= false
+end
+
+local function playSymptomWorldSound(playerId, symptomType)
+    local animation = Config.SymptomAnimation.types and Config.SymptomAnimation.types[symptomType]
+    local sound = animation and animation.sound
+    if not symptomSoundEnabled(sound) then
+        return
+    end
+
+    local targetPlayer = GetPlayerFromServerId(playerId)
+    if targetPlayer == -1 then
+        return
+    end
+
+    local ped = GetPlayerPed(targetPlayer)
+    if ped == 0 or not DoesEntityExist(ped) then
+        return
+    end
+
+    local coords = GetEntityCoords(ped)
+    local range = tonumber(Config.SymptomAnimation.soundDistance) or 25.0
+    local dist = #(GetEntityCoords(PlayerPedId()) - coords)
+    if dist > range then
+        return
+    end
+
+    local volume = 1.0
+    if dist > 1.0 then
+        volume = math.max(0.12, 1.0 - (dist / range))
+    end
+
+    if type(sound.file) == 'string' and sound.file ~= '' then
+        SendNUIMessage({
+            action = 'playSymptomSound',
+            symptom = symptomType,
+            file = sound.file,
+            volume = volume
+        })
+    end
+
+    if type(sound.speech) == 'string' and sound.speech ~= '' then
+        PlayAmbientSpeechFromPositionNative(
+            sound.speech,
+            sound.voice or 'A_M_M_MALIBU_01_WHITE_FULL_01',
+            coords.x,
+            coords.y,
+            coords.z,
+            sound.speechParam or 'SPEECH_PARAMS_FORCE'
+        )
+    end
+end
+
 local function playConfigSound(sound)
     if type(sound) ~= 'table' or sound.enabled == false then
         return
@@ -135,7 +189,6 @@ local function playSymptomAnimation()
     end
 
     loadAnimDict(animation.dict)
-    playConfigSound(animation.sound)
     TaskPlayAnim(
         ped,
         animation.dict,
@@ -149,6 +202,10 @@ local function playSymptomAnimation()
         false,
         false
     )
+
+    if symptomSoundEnabled(animation.sound) then
+        TriggerServerEvent('legends-cave-medical:server:symptomSound', symptomType)
+    end
 end
 
 local function scanPatient(entity)
@@ -260,6 +317,10 @@ RegisterNetEvent('legends-cave-medical:client:setSickness', function(illness)
         notify(Config.Messages.recovered, 'success')
         ClearPedTasks(PlayerPedId())
     end
+end)
+
+RegisterNetEvent('legends-cave-medical:client:symptomSound', function(playerId, symptomType)
+    playSymptomWorldSound(tonumber(playerId) or 0, tostring(symptomType or ''))
 end)
 
 RegisterNetEvent('legends-cave-medical:client:showScanResult', function(scan)

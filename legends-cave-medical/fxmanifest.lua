@@ -32,6 +32,7 @@ exports {
 files {
     'html/index.html',
     'html/assets/*.png',
+    'html/sounds/*.wav',
     'html/**/*',
     'installation/ox_items.lua'
 }
