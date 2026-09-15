@@ -10,6 +10,23 @@ local function notify(message, notifyType)
     })
 end
 
+local function getSoundVolume()
+    local volume = Config.Sound and tonumber(Config.Sound.volume)
+    if volume == nil then
+        volume = 0.3
+    end
+
+    if volume < 0 then
+        return 0.0
+    end
+
+    if volume > 1 then
+        return 1.0
+    end
+
+    return volume
+end
+
 local function selfScanEnabled()
     local cfg = Config.SelfScan
     if cfg == nil then
@@ -104,9 +121,14 @@ local function playSymptomWorldSound(playerId, symptomType)
         return
     end
 
-    local volume = 1.0
+    local master = getSoundVolume()
+    if master <= 0 then
+        return
+    end
+
+    local volume = master
     if dist > 1.0 then
-        volume = math.max(0.12, 1.0 - (dist / range))
+        volume = math.max(0.04, master * (1.0 - (dist / range)))
     end
 
     if type(sound.file) == 'string' and sound.file ~= '' then
@@ -116,6 +138,7 @@ local function playSymptomWorldSound(playerId, symptomType)
             file = sound.file,
             volume = volume
         })
+        return
     end
 
     if type(sound.speech) == 'string' and sound.speech ~= '' then
@@ -125,7 +148,7 @@ local function playSymptomWorldSound(playerId, symptomType)
             coords.x,
             coords.y,
             coords.z,
-            sound.speechParam or 'SPEECH_PARAMS_FORCE'
+            sound.speechParam or 'SPEECH_PARAMS_STANDARD'
         )
     end
 end
@@ -135,13 +158,21 @@ local function playConfigSound(sound)
         return
     end
 
+    local volume = getSoundVolume()
+    if volume <= 0 then
+        return
+    end
+
     local name = sound.name
     local set = sound.set
     if type(name) ~= 'string' or name == '' or type(set) ~= 'string' or set == '' then
         return
     end
 
-    PlaySoundFrontend(-1, name, set, true)
+    local soundId = GetSoundId()
+    PlaySoundFrontend(soundId, name, set, true)
+    SetVariableOnSound(soundId, 'Volume', volume)
+    ReleaseSoundId(soundId)
 end
 
 local function loadAnimDict(dict)
@@ -310,6 +341,7 @@ local function showWeatherWarning(weatherName)
         type = 'warning',
         duration = 8000
     })
+    playConfigSound(Config.WeatherWarning.sound)
 
     if Config.WeatherWarning.showInChat then
         TriggerEvent('chat:addMessage', {

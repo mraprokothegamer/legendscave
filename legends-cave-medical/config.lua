@@ -6,6 +6,11 @@ Config.ScanDistance = 2.5
 Config.ScanDuration = 5000
 Config.Debug = false
 
+-- Master volume for medical audio (0.0 silent – 1.0 full). Default 0.3 is ~30%.
+Config.Sound = {
+    volume = 0.3
+}
+
 Config.AutoSickness = {
     enabled = true,
     checkInterval = 60000,
@@ -127,6 +132,11 @@ Config.WeatherWarning = {
     -- Same storm (RAIN/THUNDER/CLEARING) will not re-alert or re-ring.
     alertOnFirstCheck = true,
     showInChat = true,
+    sound = {
+        enabled = true,
+        name = 'NAV_UP_DOWN',
+        set = 'HUD_FRONTEND_DEFAULT_SOUNDSET'
+    },
     messages = {
         RAIN = 'Rainfall reported city wide. Respiratory cases may increase.',
         THUNDER = 'Thunderstorm warning city wide. Respiratory cases may increase.',
