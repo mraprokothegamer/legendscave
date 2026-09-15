@@ -7,6 +7,7 @@ description 'APROKO hygiene item exports for ox_inventory (Qbox / qbx_core)'
 
 shared_scripts {
     '@ox_lib/init.lua',
+    'config.lua',
 }
 
 client_scripts {
