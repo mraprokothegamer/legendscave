@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legends Cave MediScan</title>
+    <style>
+        :root {
+            --bg: #05070c;
+            --panel: rgba(10, 18, 30, 0.94);
+            --panel-2: rgba(13, 28, 43, 0.9);
+            --line: rgba(80, 214, 230, 0.28);
+            --line-strong: rgba(80, 214, 230, 0.62);
+            --text: #effbff;
+            --muted: #8ea9b6;
+            --accent: #48e4f0;
+            --green: #7cf7b4;
+            --warn: #f8c55a;
+            --danger: #ff5e7a;
+            --font-label: 9px;
+            --font-chip: 10px;
+            --font-body: 12px;
+            --font-value: 13px;
+            --font-title: 18px;
+            --font-display: 20px;
+            --font-vital: 16px;
+            --scroll-thumb: rgba(72, 228, 240, 0.55);
+            --scroll-track: rgba(5, 12, 18, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent !important;
+            pointer-events: none;
+        }
+
+        body {
+            overflow: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+        }
+
+        .tablet {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            width: min(1340px, 88vw);
+            height: min(820px, 82vh);
+            transform: translate(-50%, -50%);
+            display: none;
+            overflow: hidden;
+            color-scheme: dark;
+            grid-template-columns: 1.05fr 1.2fr 0.95fr;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 10px;
+            padding: 22px 30px 20px;
+            border: 2px solid rgba(151, 175, 184, 0.46);
+            border-radius: 26px;
+            background:
+                linear-gradient(90deg, rgba(72, 228, 240, 0.95) 0 7px, transparent 7px calc(100% - 7px), rgba(72, 228, 240, 0.95) calc(100% - 7px)),
+                linear-gradient(145deg, rgba(5, 9, 14, 0.99), rgba(8, 16, 25, 0.98));
+            box-shadow:
+                0 28px 90px rgba(0, 0, 0, 0.75),
+                inset 0 0 0 9px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 13px rgba(72, 228, 240, 0.12),
+                inset 0 0 52px rgba(72, 228, 240, 0.09);
+        }
+
+        .tablet::before,
+        .tablet::after {
+            content: "";
+            position: absolute;
+            top: 82px;
+            bottom: 82px;
+            width: 18px;
+            border-radius: 10px;
+            background:
+                linear-gradient(180deg, transparent 0 12%, rgba(72, 228, 240, 0.95) 12% 18%, transparent 18% 34%, rgba(39, 45, 55, 0.92) 34% 46%, transparent 46% 58%, rgba(39, 45, 55, 0.92) 58% 70%, transparent 70% 82%, rgba(72, 228, 240, 0.95) 82% 88%, transparent 88%),
+                linear-gradient(180deg, #111820, #05080d);
+            box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.08), 0 0 18px rgba(72, 228, 240, 0.22);
+            pointer-events: none;
+        }
+
+        .tablet::before {
+            left: 9px;
+        }
+
+        .tablet::after {
+            right: 9px;
+        }
+
+        .tablet.is-open {
+            display: grid;
+            pointer-events: auto;
+        }
+
+        .panel,
+        .panel.scan-panel,
+        .right-stack {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .topbar {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 40px;
+            margin: 0 10px;
+            padding: 0 4px 8px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .brand small,
+        .section-title,
+        .label {
+            color: var(--muted);
+            font-size: var(--font-label);
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .brand strong {
+            font-size: var(--font-title);
+            letter-spacing: 0.02em;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .self-scan-btn {
+            min-height: 28px;
+            padding: 5px 10px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(72, 228, 240, 0.16);
+            color: var(--accent);
+            font-family: inherit;
+            font-size: var(--font-chip);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .self-scan-btn:hover,
+        .self-scan-btn:focus-visible {
+            background: rgba(72, 228, 240, 0.28);
+            outline: none;
+        }
+
+        .self-scan-btn[hidden] {
+            display: none !important;
+        }
+
+        .chip {
+            min-width: 88px;
+            padding: 5px 8px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(72, 228, 240, 0.08);
+            color: var(--accent);
+            text-align: center;
+            font-size: var(--font-chip);
+            font-weight: 800;
+        }
+
+        .close {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(255, 94, 122, 0.12);
+            color: var(--danger);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .panel {
+            position: relative;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            min-height: 0;
+            border: 1px solid rgba(72, 228, 240, 0.42);
+            border-radius: 10px;
+            background:
+                linear-gradient(180deg, rgba(16, 34, 49, 0.92), rgba(5, 10, 18, 0.95));
+            box-shadow: inset 0 0 18px rgba(72, 228, 240, 0.05);
+            overflow: hidden;
+        }
+
+        .panel.scan-panel {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+        }
+
+        .panel:not(.scan-panel)::after {
+            content: "";
+            position: absolute;
+            left: 1px;
+            right: 8px;
+            bottom: 1px;
+            height: 22px;
+            pointer-events: none;
+            background: linear-gradient(transparent, rgba(5, 10, 18, 0.88));
+            border-radius: 0 0 9px 10px;
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 34px;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--line);
+            background:
+                linear-gradient(90deg, rgba(72, 228, 240, 0.16), rgba(72, 228, 240, 0.05)),
+                rgba(5, 18, 27, 0.92);
+        }
+
+        .panel-body {
+            padding: 10px 10px 20px;
+            min-height: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+        }
+
+        .panel-body::-webkit-scrollbar,
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .panel-body::-webkit-scrollbar-track,
+        .history-list::-webkit-scrollbar-track {
+            background: var(--scroll-track);
+            border-radius: 8px;
+        }
+
+        .panel-body::-webkit-scrollbar-thumb,
+        .history-list::-webkit-scrollbar-thumb {
+            background: var(--scroll-thumb);
+            border-radius: 8px;
+        }
+
+        .identity-grid,
+        .vitals-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .field,
+        .vital,
+        .history-item {
+            border: 1px solid rgba(80, 214, 230, 0.18);
+            border-radius: 6px;
+            background: var(--panel-2);
+        }
+
+        .field,
+        .vital {
+            min-height: 48px;
+            padding: 8px;
+        }
+
+        .value {
+            display: block;
+            margin-top: 5px;
+            color: var(--text);
+            font-size: var(--font-value);
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .diagnosis {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid rgba(255, 94, 122, 0.45);
+            border-radius: 8px;
+            background: rgba(255, 94, 122, 0.08);
+        }
+
+        .diagnosis h1 {
+            margin: 4px 0 6px;
+            color: var(--danger);
+            font-size: var(--font-display);
+            line-height: 1.15;
+        }
+
+        .diagnosis p {
+            margin: 0;
+            color: #c9dce4;
+            font-size: var(--font-body);
+            line-height: 1.4;
+        }
+
+        .skeleton-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 0;
+            overflow: hidden;
+            padding: 8px;
+            background:
+                radial-gradient(circle at 50% 42%, rgba(72, 228, 240, 0.16), transparent 34%),
+                linear-gradient(rgba(72, 228, 240, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(72, 228, 240, 0.05) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .skeleton-wrap::before {
+            content: "";
+            position: absolute;
+            inset: 14px;
+            border: 1px solid rgba(72, 228, 240, 0.42);
+            clip-path: polygon(0 0, 22px 0, 22px 3px, 3px 3px, 3px 22px, 0 22px, 0 0, 100% 0, 100% 22px, calc(100% - 3px) 22px, calc(100% - 3px) 3px, calc(100% - 22px) 3px, calc(100% - 22px) 0, 100% 0, 100% 100%, calc(100% - 22px) 100%, calc(100% - 22px) calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) calc(100% - 22px), 100% calc(100% - 22px), 100% 100%, 0 100%, 0 calc(100% - 22px), 3px calc(100% - 22px), 3px calc(100% - 3px), 22px calc(100% - 3px), 22px 100%, 0 100%);
+            pointer-events: none;
+        }
+
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 15%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            box-shadow: 0 0 22px var(--accent);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 12%; opacity: 0.35; }
+            50% { opacity: 1; }
+            100% { top: 86%; opacity: 0.35; }
+        }
+
+        .scan-body {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .skeleton-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            object-position: center center;
+            opacity: 0.92;
+            mix-blend-mode: screen;
+            filter:
+                drop-shadow(0 0 12px rgba(72, 228, 240, 0.72))
+                drop-shadow(0 0 32px rgba(72, 228, 240, 0.32));
+        }
+
+        .checks {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(72, 228, 240, 0.06);
+        }
+
+        .checks ul,
+        .history-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .checks li {
+            padding: 5px 0;
+            color: #c9dce4;
+            font-size: var(--font-body);
+            border-bottom: 1px solid rgba(80, 214, 230, 0.12);
+        }
+
+        .checks li:last-child {
+            border-bottom: 0;
+        }
+
+        .vitals-grid {
+            margin-top: 10px;
+        }
+
+        .vital strong {
+            display: block;
+            margin-top: 5px;
+            color: var(--green);
+            font-size: var(--font-vital);
+        }
+
+        .note-box {
+            display: grid;
+            gap: 8px;
+        }
+
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: rgba(4, 8, 14, 0.75);
+            color: var(--text);
+            font-size: var(--font-body);
+            outline: none;
+        }
+
+        textarea {
+            height: 72px;
+            resize: none;
+            padding: 8px;
+            line-height: 1.35;
+        }
+
+        select {
+            height: 32px;
+            padding: 0 8px;
+        }
+
+        .save {
+            width: 100%;
+            height: 34px;
+            border: 0;
+            border-radius: 6px;
+            background: var(--accent);
+            color: #031319;
+            font-size: var(--font-body);
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .history-list {
+            display: grid;
+            gap: 8px;
+            padding-right: 2px;
+        }
+
+        .history-item {
+            padding: 8px;
+        }
+
+        .history-item strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text);
+            font-size: var(--font-value);
+        }
+
+        .history-item span,
+        .history-item p {
+            display: block;
+            margin: 0;
+            color: var(--muted);
+            font-size: var(--font-chip);
+            line-height: 1.35;
+        }
+
+        .right-stack {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 10px;
+            min-height: 0;
+        }
+
+        @media (max-width: 900px) {
+            .tablet {
+                width: min(520px, 94vw);
+                height: min(840px, 90vh);
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="tablet">
+        <header class="topbar">
+            <div class="brand">
+                <small>Legends Cave HealthNet</small>
+                <strong>MediScan Tablet</strong>
+            </div>
+            <div class="toolbar">
+                <button class="self-scan-btn" id="selfScanBtn" type="button" hidden onclick="selfScan()">Scan Self</button>
+                <div class="chip" id="severityChip">Normal</div>
+                <div class="chip" id="weatherChip">Weather: --</div>
+                <button class="close" type="button" onclick="closeScan()" aria-label="Close">x</button>
+            </div>
+        </header>
+
+        <section class="panel">
+            <div class="panel-head">
+                <span class="section-title">Patient Profile</span>
+                <span class="label" id="scanId">SCAN --</span>
+            </div>
+            <div class="panel-body">
+                <div class="identity-grid">
+                    <div class="field">
+                        <span class="label">Name</span>
+                        <span class="value" id="patientName">Unknown Patient</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">Citizen ID</span>
+                        <span class="value" id="citizenid">Unknown</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">Birthdate</span>
+                        <span class="value" id="birthdate">Unknown</span>
+                    </div>
+                    <div class="field">
+                        <span class="label">Gender</span>
+                        <span class="value" id="gender">Unknown</span>
+                    </div>
+                </div>
+
+                <div class="diagnosis">
+                    <span class="label">Current Diagnosis</span>
+                    <h1 id="illness">No result</h1>
+                    <p id="description"></p>
+                </div>
+
+                <div class="checks" id="checksWrap">
+                    <span class="section-title">Required Doctor Checks</span>
+                    <ul id="checks"></ul>
+                </div>
+
+                <div class="vitals-grid">
+                    <div class="vital">
+                        <span class="label">Temperature</span>
+                        <strong id="temperature">--</strong>
+                    </div>
+                    <div class="vital">
+                        <span class="label">Heart Rate</span>
+                        <strong id="heartRate">--</strong>
+                    </div>
+                    <div class="vital">
+                        <span class="label">Oxygen</span>
+                        <strong id="oxygen">--</strong>
+                    </div>
+                    <div class="vital">
+                        <span class="label">Blood Pressure</span>
+                        <strong id="bloodPressure">--</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel scan-panel">
+            <div class="panel-head">
+                <span class="section-title">Skeletal Diagnostic View</span>
+                <span class="label" id="checkupStatus">Check-up: --</span>
+            </div>
+            <div class="skeleton-wrap">
+                <div class="scan-line"></div>
+                <div class="scan-body" aria-label="Full skeletal body diagnostic view" role="img">
+                    <img id="skeletonImage" class="skeleton-image" src="assets/skeletal-scan.png" alt="Skeletal diagnostic scan">
+                </div>
+            </div>
+        </section>
+
+        <aside class="right-stack">
+            <section class="panel">
+                <div class="panel-head">
+                    <span class="section-title">Prescription and Notes</span>
+                    <span class="label" id="doctorName">Dr. --</span>
+                </div>
+                <div class="panel-body note-box">
+                    <label class="label" for="prescription">Prescription</label>
+                    <select id="prescription">
+                        <option value="lc_aeroclear_capsules">AeroClear Capsules</option>
+                        <option value="lc_sunveil_tablets">Sunveil Tablets</option>
+                        <option value="lc_hemopurge_pills">HemoPurge Pills</option>
+                    </select>
+                    <label class="label" for="doctorNote">Doctor Note</label>
+                    <textarea id="doctorNote" placeholder="Enter diagnosis notes, treatment response, or follow-up instructions..."></textarea>
+                    <button class="save" type="button" onclick="saveNote()">Save Medical Note</button>
+                </div>
+            </section>
+
+            <section class="panel">
+                <div class="panel-head">
+                    <span class="section-title">Patient Illness History</span>
+                    <span class="label" id="scannedAt">--</span>
+                </div>
+                <div class="panel-body">
+                    <div class="history-list" id="history"></div>
+                </div>
+            </section>
+        </aside>
+    </main>
+
+    <script>
+        const medicationLabels = {
+            lc_aeroclear_capsules: 'AeroClear Capsules',
+            lc_sunveil_tablets: 'Sunveil Tablets',
+            lc_hemopurge_pills: 'HemoPurge Pills'
+        };
+
+        let currentScan = null;
+
+        const sampleScan = {
+            patientId: 12,
+            recordId: 1017,
+            patientName: 'Kairo Vale',
+            patient: {
+                citizenid: 'LC-48291',
+                birthdate: '1997-04-18',
+                gender: 'Male',
+                phone: '555-0142'
+            },
+            doctorName: 'Dr. Nova Cross',
+            scannedAt: '2026-09-10 12:40:18',
+            weather: 'SMOG',
+            category: 'toxic',
+            illness: 'Smogblood Toxicosis',
+            description: 'A severe blood-toxin sickness caused by smog or polluted air. Patient needs a doctor scan before HemoPurge medication can work.',
+            severity: 'Severe',
+            checkupComplete: true,
+            requiredChecks: ['Blood clean check', 'Oxygen saturation check', 'Heart check', 'Full medical check-up'],
+            vitals: {
+                temperature: 38.4,
+                heartRate: 118,
+                oxygen: 84,
+                bloodPressure: 116
+            },
+            prescription: {
+                item: 'lc_hemopurge_pills',
+                label: 'HemoPurge Pills'
+            },
+            doctorNote: 'Patient exposed to dense smog. Prescribe HemoPurge and recheck oxygen after treatment.',
+            canSelfScan: true,
+            selfScanLabel: 'Scan Self',
+            history: [
+                {
+                    id: 1017,
+                    timestamp: '2026-09-10 12:40:18',
+                    doctor: 'Dr. Nova Cross',
+                    illness: 'Smogblood Toxicosis',
+                    severity: 'Severe',
+                    prescription: { item: 'lc_hemopurge_pills', label: 'HemoPurge Pills' },
+                    note: 'Patient exposed to dense smog. Prescribe HemoPurge and recheck oxygen after treatment.',
+                    status: 'Prescription issued'
+                },
+                {
+                    id: 1003,
+                    timestamp: '2026-09-09 21:16:02',
+                    doctor: 'Dr. Mira Sol',
+                    illness: 'Stormlung Syndrome',
+                    severity: 'Normal',
+                    prescription: { item: 'lc_aeroclear_capsules', label: 'AeroClear Capsules' },
+                    note: 'Coughing after rain exposure.',
+                    status: 'Recovered'
+                }
+            ]
+        };
+
+        const sampleSelfScan = {
+            patientId: 1,
+            recordId: 1024,
+            patientName: 'Dr. Nova Cross',
+            patient: {
+                citizenid: 'LC-10012',
+                birthdate: '1988-03-12',
+                gender: 'Female',
+                phone: '555-0100'
+            },
+            doctorName: 'Dr. Nova Cross',
+            scannedAt: '2026-09-11 09:41:08',
+            weather: 'RAIN',
+            category: 'respiratory',
+            illness: 'Stormlung Syndrome',
+            description: 'A wet-weather respiratory sickness caused by storm exposure. Patient may cough, run a fever, and show reduced oxygen saturation.',
+            severity: 'Normal',
+            checkupComplete: true,
+            requiredChecks: ['Oxygen saturation check', 'Heart check', 'Full medical check-up'],
+            vitals: {
+                temperature: 38.6,
+                heartRate: 104,
+                oxygen: 88,
+                bloodPressure: 118
+            },
+            prescription: {
+                item: 'lc_aeroclear_capsules',
+                label: 'AeroClear Capsules'
+            },
+            doctorNote: 'Self-scan after rain exposure on shift. AeroClear before returning to the bay.',
+            canSelfScan: true,
+            selfScanLabel: 'Scan Self',
+            isSelfScan: true,
+            history: [
+                {
+                    id: 1024,
+                    timestamp: '2026-09-11 09:41:08',
+                    doctor: 'Dr. Nova Cross',
+                    illness: 'Stormlung Syndrome',
+                    severity: 'Normal',
+                    prescription: { item: 'lc_aeroclear_capsules', label: 'AeroClear Capsules' },
+                    note: 'Self-scan after rain exposure on shift. AeroClear before returning to the bay.',
+                    status: 'Self-scan'
+                },
+                {
+                    id: 1011,
+                    timestamp: '2026-09-10 16:22:41',
+                    doctor: 'Dr. Mira Sol',
+                    illness: 'Sunflare Fever',
+                    severity: 'Severe',
+                    prescription: { item: 'lc_sunveil_tablets', label: 'Sunveil Tablets' },
+                    note: 'Treated after heat warning.',
+                    status: 'Recovered'
+                }
+            ]
+        };
+
+        function setText(id, value) {
+            document.getElementById(id).textContent = value;
+        }
+
+        function setSelfScanButton(scan) {
+            const button = document.getElementById('selfScanBtn');
+            if (!button) {
+                return;
+            }
+
+            const enabled = Boolean(scan && scan.canSelfScan);
+            button.hidden = !enabled;
+            button.textContent = (scan && scan.selfScanLabel) || 'Scan Self';
+            button.disabled = false;
+        }
+
+        function formatVitals(vitals) {
+            setText('temperature', vitals.temperature ? `${Number(vitals.temperature).toFixed(1)} C` : '--');
+            setText('heartRate', vitals.heartRate ? `${vitals.heartRate} BPM` : '--');
+            setText('oxygen', vitals.oxygen ? `${vitals.oxygen}%` : '--');
+            setText('bloodPressure', vitals.bloodPressure ? `${vitals.bloodPressure} SYS` : '--');
+        }
+
+        function renderChecks(checks) {
+            const wrap = document.getElementById('checksWrap');
+            const list = document.getElementById('checks');
+            list.innerHTML = '';
+
+            wrap.style.display = checks.length > 0 ? 'block' : 'none';
+            checks.forEach((check) => {
+                const item = document.createElement('li');
+                item.textContent = check;
+                list.appendChild(item);
+            });
+        }
+
+        function renderHistory(history) {
+            const list = document.getElementById('history');
+            list.innerHTML = '';
+
+            if (!history.length) {
+                const empty = document.createElement('div');
+                empty.className = 'history-item';
+                const title = document.createElement('strong');
+                const detail = document.createElement('span');
+                title.textContent = 'No previous records';
+                detail.textContent = 'Completed scans will appear here.';
+                empty.append(title, detail);
+                list.appendChild(empty);
+                return;
+            }
+
+            history.forEach((entry) => {
+                const item = document.createElement('article');
+                const prescription = entry.prescription && entry.prescription.label ? entry.prescription.label : 'No prescription';
+                const title = document.createElement('strong');
+                const detail = document.createElement('span');
+                const med = document.createElement('span');
+                const note = document.createElement('p');
+
+                item.className = 'history-item';
+                title.textContent = entry.illness || 'Unknown illness';
+                detail.textContent = `${entry.timestamp || '--'} | ${entry.doctor || 'Unknown doctor'} | ${entry.severity || 'Normal'}`;
+                med.textContent = `Prescription: ${prescription}`;
+                note.textContent = entry.note || entry.status || 'No doctor note recorded.';
+                item.append(title, detail, med, note);
+                list.appendChild(item);
+            });
+        }
+
+        function renderScan(scan) {
+            currentScan = scan;
+            const patient = scan.patient || {};
+            const vitals = scan.vitals || {};
+            const checks = Array.isArray(scan.requiredChecks) ? scan.requiredChecks : [];
+            const history = Array.isArray(scan.history) ? scan.history : [];
+            const prescription = scan.prescription || {};
+
+            setText('scanId', scan.isSelfScan ? `SELF ${scan.recordId || '--'}` : `SCAN ${scan.recordId || '--'}`);
+            setText('patientName', scan.patientName || patient.name || 'Unknown Patient');
+            setText('citizenid', patient.citizenid || 'Unknown');
+            setText('birthdate', patient.birthdate || 'Unknown');
+            setText('gender', patient.gender || 'Unknown');
+            setText('illness', scan.illness || 'No sickness detected');
+            setText('description', scan.description || '');
+            setText('severityChip', scan.severity || 'Normal');
+            setText('weatherChip', `Weather: ${scan.weather || 'UNKNOWN'}`);
+            setText('checkupStatus', scan.checkupComplete ? 'Check-up: Complete' : 'Check-up: Required');
+            setText('doctorName', scan.doctorName || 'Dr. --');
+            setText('scannedAt', scan.scannedAt || '--');
+
+            document.getElementById('doctorNote').value = scan.doctorNote || '';
+            document.getElementById('prescription').value = prescription.item || 'lc_aeroclear_capsules';
+
+            setSelfScanButton(scan);
+            formatVitals(vitals);
+            renderChecks(checks);
+            renderHistory(history);
+            document.querySelector('.tablet').classList.add('is-open');
+        }
+
+        function openTablet(data) {
+            currentScan = null;
+            setText('scanId', 'READY');
+            setText('patientName', 'Ready to scan');
+            setText('citizenid', '—');
+            setText('birthdate', '—');
+            setText('gender', '—');
+            setText('illness', data.illness || 'No patient loaded');
+            setText('description', data.illness
+                ? 'Current weather illness is shown above. Scan Self or third-eye a patient for a full chart.'
+                : 'Use Scan Self in the header, or third-eye another player to run a medical check-up.');
+            setText('severityChip', 'Idle');
+            setText('weatherChip', `Weather: ${data.weather || '--'}`);
+            setText('checkupStatus', 'Check-up: --');
+            setText('doctorName', 'Dr. --');
+            setText('scannedAt', '--');
+            document.getElementById('doctorNote').value = '';
+            document.getElementById('prescription').value = 'lc_aeroclear_capsules';
+            setSelfScanButton(data);
+            formatVitals({});
+            renderChecks([]);
+            renderHistory([]);
+            document.querySelector('.tablet').classList.add('is-open');
+        }
+
+        function hideScan() {
+            const tablet = document.querySelector('.tablet');
+            if (tablet) {
+                tablet.classList.remove('is-open');
+            }
+            setSelfScanButton({ canSelfScan: false });
+        }
+
+        window.addEventListener('message', (event) => {
+            const data = event.data || {};
+            if (data.action === 'showScanResult') {
+                renderScan(data);
+            } else if (data.action === 'openTablet') {
+                openTablet(data);
+            } else if (data.action === 'hideScan' || data.action === 'hideScanResult') {
+                hideScan();
+            } else if (data.action === 'playSymptomSound') {
+                playSymptomNuiSound(data);
+            }
+        });
+
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeScan();
+            }
+        });
+
+        function playSymptomNuiSound(payload) {
+            const file = (payload && payload.file) || (payload && payload.symptom && (`sounds/${payload.symptom}.wav`));
+            if (!file) {
+                return;
+            }
+
+            const volume = Math.max(0, Math.min(1, Number(payload && payload.volume)));
+            if (volume <= 0) {
+                return;
+            }
+
+            const audio = new Audio(file);
+            audio.volume = volume;
+            const play = audio.play();
+            if (play && typeof play.catch === 'function') {
+                play.catch(() => {});
+            }
+        }
+
+        function postNui(name, payload) {
+            if (typeof GetParentResourceName !== 'function') {
+                return Promise.resolve({ ok: true });
+            }
+
+            return fetch(`https://${GetParentResourceName()}/${name}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                body: JSON.stringify(payload || {})
+            });
+        }
+
+        function saveNote() {
+            if (!currentScan) return;
+
+            const item = document.getElementById('prescription').value;
+            const prescription = {
+                item,
+                label: medicationLabels[item] || item
+            };
+
+            currentScan.doctorNote = document.getElementById('doctorNote').value;
+            currentScan.prescription = prescription;
+
+            postNui('saveScanNote', {
+                patientId: currentScan.patientId,
+                recordId: currentScan.recordId,
+                note: currentScan.doctorNote,
+                prescription
+            });
+        }
+
+        function closeScan() {
+            hideScan();
+            postNui('closeScan', {});
+        }
+
+        function selfScan() {
+            postNui('selfScan', {});
+        }
+
+        function resolveSkeletonSrc() {
+            const img = document.getElementById('skeletonImage');
+            if (!img) return;
+            if (typeof GetParentResourceName === 'function') {
+                img.src = `nui://${GetParentResourceName()}/html/assets/skeletal-scan.png`;
+            } else {
+                img.src = 'assets/skeletal-scan.png';
+            }
+        }
+
+        function applyBrowserPreview() {
+            if (window.invokeNative || typeof GetParentResourceName === 'function') {
+                return;
+            }
+
+            const mode = new URLSearchParams(location.search).get('preview');
+            if (!mode) {
+                return;
+            }
+
+            document.body.classList.add('nui-preview');
+
+            if (mode === 'open') {
+                openTablet({
+                    canSelfScan: true,
+                    selfScanLabel: 'Scan Self'
+                });
+                return;
+            }
+
+            if (mode === 'scanning') {
+                openTablet({
+                    canSelfScan: true,
+                    selfScanLabel: 'Scan Self'
+                });
+                setText('checkupStatus', 'Check-up: Scanning...');
+                setText('severityChip', 'Scanning');
+                setText('illness', 'Scanning...');
+                setText('description', 'Doctor check-up in progress.');
+                return;
+            }
+
+            if (mode === 'self-scan') {
+                renderScan(sampleSelfScan);
+                return;
+            }
+
+            if (mode === '1' || mode === 'results' || mode === 'results-scrolled') {
+                renderScan(sampleScan);
+                if (mode === 'results-scrolled') {
+                    const scrollPanels = () => {
+                        document.querySelectorAll('.panel-body').forEach((el) => {
+                            el.scrollTop = el.scrollHeight;
+                        });
+                    };
+                    requestAnimationFrame(scrollPanels);
+                    setTimeout(scrollPanels, 250);
+                }
+            }
+        }
+
+        resolveSkeletonSrc();
+        applyBrowserPreview();
+    </script>
+</body>
+</html>
