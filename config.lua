@@ -115,6 +115,13 @@ Config.Items = {
         category = 'Weapons'
     },
     {
+        label = 'C4 Bomb',
+        item = 'bomb_c4',
+        price = 15000,
+        desc = 'Packaged C4 demolition charge.',
+        category = 'Weapons'
+    },
+    {
         label = 'Body Armour',
         item = 'armour',
         price = 5000,
@@ -141,6 +148,34 @@ Config.Items = {
         item = 'drill',
         price = 8500,
         desc = 'Portable drilling equipment.',
+        category = 'Tools'
+    },
+    {
+        label = 'Small Drill',
+        item = 'small_drill',
+        price = 8500,
+        desc = 'Compact handheld drill.',
+        category = 'Tools'
+    },
+    {
+        label = 'Large Drill',
+        item = 'large_drill',
+        price = 28000,
+        desc = 'Heavy industrial drill.',
+        category = 'Tools'
+    },
+    {
+        label = 'Aftermarket Locks',
+        item = 'aftermarket_locks',
+        price = 35000,
+        desc = 'Upgraded vehicle lock hardware.',
+        category = 'Tools'
+    },
+    {
+        label = 'Diving Gear',
+        item = 'diving_gear',
+        price = 18000,
+        desc = 'Scuba tank and diving equipment.',
         category = 'Tools'
     },
     {
@@ -271,10 +306,45 @@ Config.Items = {
         category = 'SpyGear'
     },
     {
+        label = 'Blue Keycard',
+        item = 'blue_keycard',
+        price = 25000,
+        desc = 'Restricted blue-tier access keycard.',
+        category = 'SpyGear'
+    },
+    {
+        label = 'Hack USB',
+        item = 'hack_usb',
+        price = 36000,
+        desc = 'Encrypted USB used for digital intrusion.',
+        category = 'SpyGear'
+    },
+    {
         label = 'Fraud Laptop',
         item = 'fraud_laptop',
         price = 650000,
         desc = 'Specialised computer for underground operations.',
+        category = 'SpyGear'
+    },
+    {
+        label = 'Crypto Tablet',
+        item = 'crypto_tablet',
+        price = 55000,
+        desc = 'Encrypted tablet for underground crypto work.',
+        category = 'SpyGear'
+    },
+    {
+        label = 'Hacker Phone',
+        item = 'hackerphone',
+        price = 45000,
+        desc = 'Modified phone for network intrusion.',
+        category = 'SpyGear'
+    },
+    {
+        label = 'Legends Burner',
+        item = 'legends_burner',
+        price = 20000,
+        desc = 'Untraceable burner phone.',
         category = 'SpyGear'
     },
     {
@@ -363,8 +433,15 @@ Config.Items = {
         category = 'Consumables'
     },
     {
-        label = 'Marula Vifgor',
-        item = 'marula_vifgor',
+        label = 'Odeshi',
+        item = 'odeshi',
+        price = 350000,
+        desc = 'Black-market protection consumable.',
+        category = 'Consumables'
+    },
+    {
+        label = 'Marula Vigor',
+        item = 'marula_vigor',
         price = 50000,
         desc = 'Black-market consumable.',
         category = 'Consumables'
