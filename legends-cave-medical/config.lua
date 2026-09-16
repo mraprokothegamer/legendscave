@@ -53,6 +53,7 @@ Config.SymptomAnimation = {
             flag = 48,
             sound = {
                 enabled = true,
+                -- Real CC0/PD recordings in html/sounds/. See html/sounds/SOURCES.txt.
                 file = 'sounds/cough.wav',
                 speech = 'GENERIC_COUGH',
                 voice = 'A_M_M_MALIBU_01_WHITE_FULL_01'
@@ -65,7 +66,7 @@ Config.SymptomAnimation = {
             flag = 48,
             sound = {
                 enabled = true,
-                file = 'sounds/sneeze.wav',
+                file = 'sounds/sneeze.wav',  -- PD human sneeze; see html/sounds/SOURCES.txt
                 speech = 'GENERIC_SHOCKED_MED',
                 voice = 'A_M_M_MALIBU_01_WHITE_FULL_01'
             }
@@ -77,7 +78,7 @@ Config.SymptomAnimation = {
             flag = 48,
             sound = {
                 enabled = true,
-                file = 'sounds/vomit.wav',
+                file = 'sounds/vomit.wav',  -- CC0 human vomit; see html/sounds/SOURCES.txt
                 speech = 'GENERIC_CURSE_MED',
                 voice = 'A_M_M_MALIBU_01_WHITE_FULL_01'
             }

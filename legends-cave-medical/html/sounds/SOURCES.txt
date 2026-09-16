@@ -1,0 +1,30 @@
+Symptom audio — real human recordings (public domain / CC0 only).
+Trimmed silence and a short fade only. Not synthesized, not GTA frontend sounds.
+
+cough.wav
+  Title:    Short cough / choke
+  Author:   Breviceps
+  License:  CC0 1.0 Public Domain Dedication
+  License:  https://creativecommons.org/publicdomain/zero/1.0/
+  Source:   https://freesound.org/people/Breviceps/sounds/444723/
+  Notes:    Original is a CC0 WAV. This file is the HQ preview of that
+            same recording, converted to 44.1 kHz mono PCM, trimmed, faded.
+
+sneeze.wav
+  Title:    Sneezing
+  Author:   jc
+  License:  Public domain (pdsounds.org; Wikimedia Commons PD-author)
+  Source:   https://commons.wikimedia.org/wiki/File:Sneezing.ogg
+  Original: http://www.pdsounds.org/sounds/sneezing  (record 566)
+  Direct:   https://upload.wikimedia.org/wikipedia/commons/d/d0/Sneezing.ogg
+  Notes:    Young female sneezing. The source file has two sneezes; this
+            clip is the louder second sneeze, trimmed and faded.
+
+vomit.wav
+  Title:    Man vomiting #2
+  Author:   Joseph SARDIN / BigSoundBank (LaSonotheque)
+  License:  CC0 / public-domain equivalent
+  Source:   https://bigsoundbank.com/man-vomiting-2-s2497.html
+  Direct:   https://bigsoundbank.com/UPLOAD/bwf-en/2497.wav
+  Notes:    Studio recording of a man vomiting (~2 s). All heaves kept;
+            leading/trailing silence trimmed; light fade; 44.1 kHz mono PCM.

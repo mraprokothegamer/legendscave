@@ -14,6 +14,7 @@ Simple Legends Cave EMS scanner for FiveM, built for Qbox and ox resources.
 - Makes players sick from weather exposure based on configurable chances.
 - Plays a 2-second symptom animation immediately, then repeats it every 30 seconds until cured.
 - Uses coughing, sneezing, or vomiting animations based on the sickness type.
+- Nearby players hear real cough / sneeze / vomit recordings from `html/sounds/` (NUI, `Config.Sound.volume` default 0.3, ~25 m).
 - Drains the patient's health while they are sick.
 - Requires severe cases to be scanned by an ambulance doctor before medication works.
 - Uses no props, no streamed models, no equipment tables, and no placed scanners.
@@ -116,3 +117,15 @@ Add the items from [installation/ox_items.lua](installation/ox_items.lua) to you
     }
 },
 ```
+
+## Symptom audio
+
+Nearby clients play `html/sounds/{cough,sneeze,vomit}.wav` when a sick player coughs, sneezes, or vomits. Volume is `Config.Sound.volume` (default **0.3**) faded by distance (`Config.SymptomAnimation.soundDistance`, default 25 m). These are real human recordings, not GTA frontend beeps.
+
+| File | Recording | License | Source |
+| --- | --- | --- | --- |
+| `html/sounds/cough.wav` | Short cough / choke — Breviceps | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | https://freesound.org/people/Breviceps/sounds/444723/ |
+| `html/sounds/sneeze.wav` | Sneezing — jc (pdsounds.org 566) | Public domain | https://commons.wikimedia.org/wiki/File:Sneezing.ogg |
+| `html/sounds/vomit.wav` | Man vomiting #2 — Joseph SARDIN / BigSoundBank | CC0 / public-domain equivalent | https://bigsoundbank.com/man-vomiting-2-s2497.html |
+
+Full provenance is in [html/sounds/SOURCES.txt](html/sounds/SOURCES.txt). Clips were silence-trimmed with a short fade only.
